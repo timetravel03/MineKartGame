@@ -94,6 +94,7 @@ public class Kart extends Sprite {
         b2Body.createFixture(fDef).setUserData(this);
 
         // colision cabeza (test)
+//        hola
 
 //        EdgeShape front = new EdgeShape();
 //        front.set(new Vector2(7 / MineKart.PPM, 7 / MineKart.PPM), new Vector2(7 / MineKart.PPM, -7 / MineKart.PPM));
