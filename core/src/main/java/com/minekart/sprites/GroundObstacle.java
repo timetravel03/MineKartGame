@@ -2,26 +2,25 @@ package com.minekart.sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.minekart.MineKart;
+import com.minekart.screens.Fase;
 
 public class GroundObstacle extends InteractiveTileObject {
-    public GroundObstacle(World world, TiledMap map, Rectangle bounds){
-        super(world,map,bounds);
+    boolean tocado;
+    Fase rm;
+    public GroundObstacle(World world, TiledMap map, Rectangle bounds, Fase screen){
+        super(world,map,bounds, screen);
         fixture.setUserData(this);
-        setCategoryFilter(MineKart.OBSTACLE_BIT);
+        rm = screen;
     }
 
     // método que hace desaparecer el bloque con el que colisiona el personaje
-    @Override
-    public void onHeadHit() {
+    public void onCollision(Kart player) {
         Gdx.app.log("OBSTACLE","Collision");
-        setCategoryFilter(MineKart.DESTROYED_BIT);
         getCell().setTile(null);
+        player.setCantidad_vidas(player.getCantidad_vidas()-1);
+        rm.removeBody(body);
     }
+
 }

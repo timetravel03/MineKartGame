@@ -18,25 +18,13 @@ public class Hud implements Disposable {
     public Stage stage;
     private Viewport viewport;
 
-    private Integer worldTimer;
-    private float timeCount;
-    private Integer score;
-
-    Label countDownLabel;
-    Label scoreLabel;
-    Label timeLabel;
-    Label levelLabel;
-    Label worldLabel;
-    Label kartLabel;
-    Label version;
-
-    String state = "";
+    public Label coinsLabel;
+    public Label scoreLabel;
+    public Label vidasLabel;
+    public Label progresoLabel;
+    public Label frutasLabel;
 
     public Hud(SpriteBatch sb) {
-        worldTimer = 300;
-        timeCount = 0;
-        score = 0;
-
         viewport = new FitViewport(MineKart.V_WIDTH, MineKart.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, sb);
 
@@ -44,28 +32,25 @@ public class Hud implements Disposable {
         table.top();
         table.setFillParent(true);
 
-        countDownLabel = new Label(String.format("%03d", worldTimer), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        scoreLabel = new Label(String.format("%06d", score), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        timeLabel = new Label("MONO", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        worldLabel = new Label(state, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        levelLabel = new Label("1-1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        kartLabel = new Label("PUNTOS", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        version = new Label("v0.1", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        vidasLabel = new Label(String.format("Vidas: %d", 4), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        progresoLabel = new Label(String.format("Progreso: %d", 0), new Label.LabelStyle(new BitmapFont(),Color.WHITE));
+        frutasLabel = new Label(String.format("Frutas: x%d", 0), new Label.LabelStyle(new BitmapFont(),Color.WHITE));
+        coinsLabel = new Label(String.format("Monedas: x%d", 0), new Label.LabelStyle(new BitmapFont(),Color.WHITE));
 
-        table.add(kartLabel).expandX().padTop(5);
-        table.add(worldLabel).expandX().padTop(5);
-        table.add(timeLabel).expandX().padTop(5);
+        table.add(vidasLabel).expandX().padTop(5);
+        table.add(progresoLabel).expandX().padTop(5);
         table.row();
-        table.add(scoreLabel).expandX();
-//        table.add(levelLabel).expandX();
-        table.add(countDownLabel).expandX();
+        table.add(frutasLabel);
+        table.row();
+        table.add(coinsLabel);
 
         stage.addActor(table);
     }
 
     public void update(Kart player){
-        worldLabel.setText(player.getState().toString());
-        scoreLabel.setText(player.getPuntuacion());
+        coinsLabel.setText(String.format("Monedas: x%d", player.getCantidad_monedas()));
+        vidasLabel.setText(String.format("Vidas: %d", player.getCantidad_vidas()));
+        frutasLabel.setText(String.format("Frutas: x%d", player.getFrutas()));
     }
 
     @Override

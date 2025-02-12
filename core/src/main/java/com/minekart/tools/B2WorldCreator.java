@@ -13,18 +13,20 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
+import com.minekart.screens.Fase;
+import com.minekart.sprites.CoinTile;
+import com.minekart.sprites.FruitTile;
 import com.minekart.sprites.GroundObstacle;
-import com.minekart.sprites.InteractiveTileObject;
 
 public class B2WorldCreator {
-    public B2WorldCreator(World world, TiledMap map) {
+    public B2WorldCreator(World world, TiledMap map, Fase screen) {
         BodyDef bDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fDef = new FixtureDef();
         Body body;
 
-        // ground
-        for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
+        // suelo
+        for (MapObject object : map.getLayers().get("suelo").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
             bDef.type = BodyDef.BodyType.StaticBody;
@@ -33,19 +35,29 @@ public class B2WorldCreator {
             body = world.createBody(bDef);
             shape.setAsBox((rectangle.getWidth() / 2) / MineKart.PPM, (rectangle.getHeight() / 2) / MineKart.PPM);
             fDef.shape = shape;
-//            fDef.restitution = .9f;
             body.createFixture(fDef);
         }
 
-//         obstacles
-        for (MapObject object : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
+        // obstaculos
+        for (MapObject object : map.getLayers().get("obstaculos").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            new GroundObstacle(world, map, rectangle, screen);
+        }
 
-            new GroundObstacle(world, map, rectangle);
+        //Monedas
+        for (MapObject object : map.getLayers().get("monedas").getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            new CoinTile(world, map, rectangle, screen);
+        }
+
+        //Frutas
+        for (MapObject object : map.getLayers().get("frutas").getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            new FruitTile(world, map, rectangle, screen);
         }
 
         //rebotes
-        for (MapObject object : map.getLayers().get(6).getObjects().getByType(RectangleMapObject.class)) {
+        for (MapObject object : map.getLayers().get("rebotes").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
             bDef.type = BodyDef.BodyType.StaticBody;
@@ -54,13 +66,13 @@ public class B2WorldCreator {
             body = world.createBody(bDef);
             shape.setAsBox((rectangle.getWidth() / 2) / MineKart.PPM, (rectangle.getHeight() / 2) / MineKart.PPM);
             fDef.shape = shape;
+            fDef.friction = 0f;
             fDef.restitution = .9f;
             body.createFixture(fDef);
         }
 
-
-        //polygon
-        for (MapObject object : map.getLayers().get(4).getObjects().getByType(PolygonMapObject.class)) {
+        //polígono (ramapas)
+        for (MapObject object : map.getLayers().get("rampas").getObjects().getByType(PolygonMapObject.class)) {
             Polygon polygon = ((PolygonMapObject) object).getPolygon();
             BodyDef bodyDef = new BodyDef();
             FixtureDef fixtureDef = new FixtureDef();

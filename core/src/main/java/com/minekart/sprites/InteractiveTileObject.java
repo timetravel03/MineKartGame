@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
+import com.minekart.screens.Fase;
 
 public abstract class InteractiveTileObject {
     protected World world;
@@ -20,11 +21,13 @@ public abstract class InteractiveTileObject {
     protected Rectangle bounds;
     protected Body body;
     protected Fixture fixture;
+    protected Fase screen;
 
-    public InteractiveTileObject(World world, TiledMap map, Rectangle bounds) {
+    public InteractiveTileObject(World world, TiledMap map, Rectangle bounds, Fase screen) {
         this.world = world;
         this.map = map;
         this.bounds = bounds;
+        this.screen = screen;
 
         BodyDef bDef = new BodyDef();
         FixtureDef fDef = new FixtureDef();
@@ -36,10 +39,11 @@ public abstract class InteractiveTileObject {
         body = world.createBody(bDef);
         shape.setAsBox((bounds.getWidth() / 2) / MineKart.PPM, (bounds.getHeight() / 2) / MineKart.PPM);
         fDef.shape = shape;
+        fDef.isSensor = true;
         fixture = body.createFixture(fDef);
     }
 
-    public abstract void onHeadHit();
+    public abstract void onCollision(Kart player);
 
     public void setCategoryFilter(short filterBit) {
         Filter filter = new Filter();
