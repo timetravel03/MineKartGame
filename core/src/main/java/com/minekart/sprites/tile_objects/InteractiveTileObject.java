@@ -1,4 +1,4 @@
-package com.minekart.sprites;
+package com.minekart.sprites.tile_objects;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -13,6 +13,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
 import com.minekart.screens.Fase;
+import com.minekart.screens.Nivel;
+import com.minekart.sprites.Kart;
 
 public abstract class InteractiveTileObject {
     protected World world;
@@ -21,9 +23,9 @@ public abstract class InteractiveTileObject {
     protected Rectangle bounds;
     protected Body body;
     protected Fixture fixture;
-    protected Fase screen;
+    protected Nivel screen;
 
-    public InteractiveTileObject(World world, TiledMap map, Rectangle bounds, Fase screen) {
+    public InteractiveTileObject(World world, TiledMap map, Rectangle bounds, Nivel screen) {
         this.world = world;
         this.map = map;
         this.bounds = bounds;
@@ -53,7 +55,7 @@ public abstract class InteractiveTileObject {
 
     // metodo que obtiene la celda en la que está el personaje
     public TiledMapTileLayer.Cell getCell() {
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(2);
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get("gfx");
         int x = (int) (body.getPosition().x * MineKart.PPM / 16);
         int y = (int) (body.getPosition().y * MineKart.PPM / 16);
         System.out.println("Pos: " + x + ", " + y);

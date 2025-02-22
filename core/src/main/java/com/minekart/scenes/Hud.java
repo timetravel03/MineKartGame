@@ -51,6 +51,7 @@ public class Hud implements Disposable {
         coinsLabel.setText(String.format("Monedas: x%d", player.getCantidad_monedas()));
         vidasLabel.setText(String.format("Vidas: %d", player.getCantidad_vidas()));
         frutasLabel.setText(String.format("Frutas: x%d", player.getFrutas()));
+        progresoLabel.setText(String.format("X: %.0f Y: %.0f", player.b2Body.getPosition().x,  player.b2Body.getPosition().y));
     }
 
     @Override

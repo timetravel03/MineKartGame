@@ -1,19 +1,16 @@
-package com.minekart.sprites;
+package com.minekart.sprites.interactive_objects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
+import com.minekart.screens.Nivel;
 import com.minekart.screens.PlayScreen;
+import com.minekart.sprites.Kart;
 
 //TODO implementar InteractiveTileObject para poder darles posicion en el tiled
 public class Coin extends InteractiveObject {
-    public Coin(World world, Vector2 pos, PlayScreen screen, Texture texture){
+    public Coin(World world, Vector2 pos, Nivel screen, Texture texture){
         super(world,pos,screen, texture);
         this.setBounds(0, 0, 16 / MineKart.PPM, 16 / MineKart.PPM);
         this.setPosition(pos.x - (this.getWidth() / 2), pos.y - (this.getHeight() / 2));
@@ -21,7 +18,7 @@ public class Coin extends InteractiveObject {
 
     @Override
     public void touched(Kart player){
-        recogida = true;
+        contacto = true;
 //        player.sumaPuntuacion(MineKart.COIN_VALUE);
     }
 }

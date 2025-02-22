@@ -28,7 +28,7 @@ public class Eyeball extends Sprite {
     Array<TextureAtlas.AtlasRegion> frames;
     Sprite the_hand;
     float stateTime;
-    Body eye_body;
+    public Body eye_body;
     public static final int boundX = 100;
     public static final int boundY = 100;
 
@@ -59,7 +59,7 @@ public class Eyeball extends Sprite {
         fixtureDef.shape = shape;
         fixtureDef.isSensor = true;
         eye_body.createFixture(fixtureDef).setUserData(this);
-        eye_body.setLinearVelocity(new Vector2(.5f,0));
+//        eye_body.setLinearVelocity(new Vector2(.5f,0));
     }
 
     @Override
@@ -79,7 +79,8 @@ public class Eyeball extends Sprite {
         return eye_animation.getKeyFrame(stateTime, true);
     }
 
-    public void update(float dt) {
+    public void update(float dt, Kart player) {
+        eye_body.setLinearVelocity(new Vector2(player.b2Body.getLinearVelocity().x, player.b2Body.getLinearVelocity().y));
         this.setRegion(animateEye(dt));
         this.setPosition(eye_body.getPosition().x - this.getWidth() / 2, eye_body.getPosition().y - this.getWidth() / 2);
         the_hand.setPosition(eye_body.getPosition().x - this.getWidth() -21 / MineKart.PPM, eye_body.getPosition().y - this.getWidth() - 85 / MineKart.PPM); //

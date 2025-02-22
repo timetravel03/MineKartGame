@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.minekart.MineKart;
@@ -51,15 +52,31 @@ public class Kart extends Sprite {
 
     Vector2 posicionActual;
 
-    Fase screen;
+//    Fase screen;
+
+    public boolean reaparecer;
+
+    //test contacto
+    public boolean enSuelo;
+    public boolean enRampa;
+
+    //test de salto
+    private boolean isJumping;
+    private float jumpTimer;
+    private final float MAX_JUMP_TIME = 1f; // maximum time for jump boost (in seconds)
+    private final float INITIAL_JUMP_FORCE = 3.0f; // initial jump impulse
+    private final float JUMP_BOOST = 3.0f; // continuous upward force while holding
 
     //STATES en principio no los voy a usar pero los dejo por que pueden venir bien
-    public Kart(World world, PlayScreen screen) {
+    public Kart(World world) {
         this.world = world;
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
-        this.screen = screen;
+//        this.screen = screen;
+        enSuelo = true;
+        enRampa = false;
+        reaparecer = false;
 
         textura_tabaco = new Texture("marlboro_64.png");
         textura_minecart = new Texture("minecart_64.png");
@@ -87,7 +104,7 @@ public class Kart extends Sprite {
     // propiedades fisicas
     public void defineKart() {
         BodyDef bDef = new BodyDef();
-        bDef.position.set(400 / MineKart.PPM, 256 / MineKart.PPM);
+        bDef.position.set(300 / MineKart.PPM, 270 / MineKart.PPM);
         bDef.type = BodyDef.BodyType.DynamicBody;
         b2Body = world.createBody(bDef);
 
@@ -98,6 +115,7 @@ public class Kart extends Sprite {
         fDef.shape = circleShape;
         fDef.friction = 0.1f;
         b2Body.createFixture(fDef).setUserData(this);
+        circleShape.dispose();
     }
 
     public State getState() {
@@ -157,31 +175,53 @@ public class Kart extends Sprite {
         super.draw(batch);
     }
 
+    public void kartInput(float dt) {
+        // Jump start
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.justTouched()) && enSuelo) {
+            isJumping = true;
+            jumpTimer = 0;
+            // Initial jump impulse
+            b2Body.setLinearVelocity(b2Body.getLinearVelocity().x, 0); // Reset vertical velocity
+            b2Body.applyLinearImpulse(new Vector2(0, INITIAL_JUMP_FORCE), b2Body.getWorldCenter(), true);
+        }
+
+        // Jump continuation
+        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isTouched()) && isJumping) {
+            if (jumpTimer < MAX_JUMP_TIME) {
+                // Apply continuous upward force while holding
+                b2Body.applyForceToCenter(new Vector2(0, JUMP_BOOST), true);
+            }
+        } else {
+            // If button/touch released, stop jumping
+            isJumping = false;
+        }
+    }
+
     public void update(float dt) {
-        // mover el sistema de coordenadas desde el centro del círculo a la esquina inferior izq
+        // Update jump timer
+        if (isJumping) {
+            jumpTimer += dt;
+            if (jumpTimer >= MAX_JUMP_TIME) {
+                isJumping = false;
+            }
+        }
+
         setPosition(b2Body.getPosition().x - getWidth() / 2, (b2Body.getPosition().y - getHeight() / 2));
         tabaco.setPosition(b2Body.getPosition().x - getWidth() / 2, posicionActual.y + 5 / MineKart.PPM);
         minecart_back.setPosition(b2Body.getPosition().x - getWidth() / 2, (b2Body.getPosition().y - getHeight() / 2) + 1 / MineKart.PPM);
-    }
 
-    public void kartInput(float dt) {
-//        && this.b2Body.getLinearVelocity().y == 0 debug
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.justTouched()) && this.b2Body.getLinearVelocity().y == 0) {
-            this.b2Body.applyLinearImpulse(new Vector2(0, 4f), this.b2Body.getWorldCenter(), true);
-//            this.b2Body.applyForce(new Vector2(0, 200f), this.b2Body.getWorldCenter(), true);
-        }
-        if (this.b2Body.getLinearVelocity().x < X_KART_SPEED) {
-            this.b2Body.applyLinearImpulse(new Vector2(.2f, 0), this.b2Body.getWorldCenter(), true);
+        // velocidad constante FIXME rompe las rampas (ahora menos)
+        if (!enRampa) {
+            b2Body.setLinearVelocity(new Vector2(1.5f, b2Body.getLinearVelocity().y));
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && this.b2Body.getLinearVelocity().x <= 2) {
-//            this.b2Body.applyLinearImpulse(new Vector2(.1f, 0), this.b2Body.getWorldCenter(), true);
-            this.b2Body.applyForce(new Vector2(4f, 0), this.b2Body.getWorldCenter(), true);
+        // TODO muerte por caida revisar
+        if (b2Body.getPosition().y < 0) {
+            setCantidad_vidas(getCantidad_vidas() - 1);
+            reaparecer = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && this.b2Body.getLinearVelocity().x >= -2) {
-//            this.b2Body.applyLinearImpulse(new Vector2(-.1f, 0), this.b2Body.getWorldCenter(), true);
-            this.b2Body.applyForce(new Vector2(-4f, 0), this.b2Body.getWorldCenter(), true);
-        }
+
+        kartInput(dt);
     }
 
 }

@@ -14,18 +14,40 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
 import com.minekart.screens.Fase;
-import com.minekart.sprites.CoinTile;
-import com.minekart.sprites.FruitTile;
-import com.minekart.sprites.GroundObstacle;
+import com.minekart.screens.Nivel;
+import com.minekart.sprites.tile_objects.CoinTile;
+import com.minekart.sprites.tile_objects.FruitTile;
+import com.minekart.sprites.tile_objects.GroundObstacle;
 
 public class B2WorldCreator {
-    public B2WorldCreator(World world, TiledMap map, Fase screen) {
-        BodyDef bDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fDef = new FixtureDef();
-        Body body;
+    BodyDef bDef;
+    PolygonShape shape;
+    FixtureDef fDef;
+    Body body;
+    World world;
+    TiledMap map;
+    Nivel screen;
 
-        // suelo
+    public B2WorldCreator(World world, TiledMap map, Nivel screen) {
+        this.world = world;
+        this.map = map;
+        this.screen = screen;
+
+        bDef = new BodyDef();
+        shape = new PolygonShape();
+        fDef = new FixtureDef();
+    }
+
+    public void crearTodo() {
+        crearSuelo();
+        crearObstaculos();
+        crearFrutas();
+        crearRampas();
+        crearRebotes();
+        crearMonedas();
+    }
+
+    public void crearSuelo() {
         for (MapObject object : map.getLayers().get("suelo").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
@@ -35,28 +57,33 @@ public class B2WorldCreator {
             body = world.createBody(bDef);
             shape.setAsBox((rectangle.getWidth() / 2) / MineKart.PPM, (rectangle.getHeight() / 2) / MineKart.PPM);
             fDef.shape = shape;
-            body.createFixture(fDef);
+            fDef.friction = .25f;
+            body.createFixture(fDef).setUserData("suelo");
         }
+    }
 
-        // obstaculos
+    public void crearObstaculos() {
         for (MapObject object : map.getLayers().get("obstaculos").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
             new GroundObstacle(world, map, rectangle, screen);
         }
+    }
 
-        //Monedas
+    public void crearMonedas() {
         for (MapObject object : map.getLayers().get("monedas").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
             new CoinTile(world, map, rectangle, screen);
         }
+    }
 
-        //Frutas
+    public void crearFrutas() {
         for (MapObject object : map.getLayers().get("frutas").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
             new FruitTile(world, map, rectangle, screen);
         }
+    }
 
-        //rebotes
+    public void crearRebotes() {
         for (MapObject object : map.getLayers().get("rebotes").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
 
@@ -70,8 +97,9 @@ public class B2WorldCreator {
             fDef.restitution = .9f;
             body.createFixture(fDef);
         }
+    }
 
-        //polígono (ramapas)
+    public void crearRampas() {
         for (MapObject object : map.getLayers().get("rampas").getObjects().getByType(PolygonMapObject.class)) {
             Polygon polygon = ((PolygonMapObject) object).getPolygon();
             BodyDef bodyDef = new BodyDef();
@@ -81,13 +109,13 @@ public class B2WorldCreator {
             Body bodyPol = world.createBody(bodyDef);
             PolygonShape polygonShape = new PolygonShape();
             fixtureDef.shape = convertPolygonToPolygonShape(polygon, MineKart.PPM);
-            fixtureDef.friction = 0f;
-            bodyPol.createFixture(fixtureDef);
+            fixtureDef.friction = .1f;
+            bodyPol.createFixture(fixtureDef).setUserData("rampa");
         }
     }
 
     // chatgpt (revisar y entender)
-    public PolygonShape convertPolygonToPolygonShape(Polygon polygon, float pixelsPerMeter) {
+    private PolygonShape convertPolygonToPolygonShape(Polygon polygon, float pixelsPerMeter) {
         PolygonShape polygonShape = new PolygonShape();
 
         // Get the transformed vertices from the LibGDX Polygon

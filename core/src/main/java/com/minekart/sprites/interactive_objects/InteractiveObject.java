@@ -1,4 +1,4 @@
-package com.minekart.sprites;
+package com.minekart.sprites.interactive_objects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -6,27 +6,32 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
-import com.minekart.screens.PlayScreen;
+import com.minekart.screens.Fase;
+import com.minekart.screens.Nivel;
+import com.minekart.sprites.Kart;
 
 public abstract class InteractiveObject extends Sprite{
-    public Body body;
-    private World world;
-    public boolean recogida;
+    protected Body body;
+    protected World world;
+    protected boolean contacto;
+    protected Nivel screen;
 
-    public InteractiveObject(World world, Vector2 pos, PlayScreen screen, Texture texture) {
+    public InteractiveObject(World world, Vector2 pos, Nivel screen, Texture texture) {
         this.world = world;
-        recogida = false;
+        this.screen = screen;
+        contacto = false;
         this.set(new Sprite(texture));
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(pos);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.isSensor= true; // si es sensor no colisiona
         CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(6/MineKart.PPM);
+        circleShape.setRadius(10/MineKart.PPM);
         fixtureDef.shape = circleShape;
         body = world.createBody(bodyDef);
         body.createFixture(fixtureDef).setUserData(this);

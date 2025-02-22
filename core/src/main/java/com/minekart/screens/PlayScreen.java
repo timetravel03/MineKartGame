@@ -1,6 +1,7 @@
 package com.minekart.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -19,10 +21,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
 import com.minekart.scenes.Hud;
-import com.minekart.sprites.Coin;
 import com.minekart.sprites.Eyeball;
-import com.minekart.sprites.Fruit;
 import com.minekart.sprites.Kart;
+import com.minekart.sprites.interactive_objects.FallingRock;
 import com.minekart.tools.B2WorldCreator;
 import com.minekart.tools.WorldContactListener;
 
@@ -55,12 +56,16 @@ public class PlayScreen implements Screen, Fase {
     private Texture hand_texture;
     private Eyeball eyeball;
 
-//    //monedas
+    //deltaTimer
+    private float deltaTimer;
+
+    //    //monedas
 //    public Texture coinTexture;
 //    public Array<Coin> arrayMonedas;
 //
 //    //frutas
-//    public Texture bananaTexture;
+    private Texture rock_texture;
+    public Array<FallingRock> rocas;
 //    public Array<Fruit> arrayBananas;
 
     public static Array<Body> listaCuerposEliminar;
@@ -70,9 +75,12 @@ public class PlayScreen implements Screen, Fase {
         this.game = game;
         completada = false;
         listaCuerposEliminar = new Array<>();
+        rocas = new Array<>();
+        deltaTimer = 0;
         //recursos
         eye_atlas = new TextureAtlas("eye/eye2.atlas");
         hand_texture = new Texture("eye/mano_ruido.png");
+        rock_texture = new Texture("rocas/rock3.png");
 
         //camara
         gameCam = new OrthographicCamera();
@@ -81,47 +89,34 @@ public class PlayScreen implements Screen, Fase {
 
         //mapa
         mapLoader = new TmxMapLoader();
+//        map = mapLoader.load("mapa_1.tmx");
         map = mapLoader.load("test2.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / MineKart.PPM);
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
         // box2d
-        world = new World(new Vector2(0, -10), true);
+        world = new World(new Vector2(0, -7.5f), true);
         b2dr = new Box2DDebugRenderer();
-        new B2WorldCreator(world, map, this);
+//        B2WorldCreator worldCreator = new B2WorldCreator(world, map, this);
+//        worldCreator.crearSuelo();
+//        worldCreator.crearMonedas();
+//        worldCreator.crearTodo();
         world.setContactListener(new WorldContactListener());
 
         //jugador
-        kartPlayer = new Kart(world, this);
-        eyeball = new Eyeball(world, this);
-        eyeball.setPosition(0, -10);
-
-        // creacion dinámica
-//         crearObjetosMundo();
+        kartPlayer = new Kart(world);
+//        eyeball = new Eyeball(world, this);
+//        eyeball.setPosition(0, -10);
     }
 
-    // funcion cargar monedas
-//    public void crearObjetosMundo() {
-//        arrayMonedas = new Array<>();
-//        Vector2 posicion;
-//        int incremento = 50;
-//        int x2 = 512;
-//        float x = MathUtils.random(gamePort.getWorldWidth() / MineKart.PPM);
-//        float y = MathUtils.random(MineKart.V_HEIGHT / MineKart.PPM);
-//        for (int i = 0; i < 30; i++) {
-//            x2 += incremento;
-//            posicion = new Vector2(x2 / MineKart.PPM, 256 / MineKart.PPM);
-//            arrayMonedas.add(new Coin(world, posicion, this, this.coinTexture));
-//        }
-//
-//        arrayBananas = new Array<>();
-//        x2 = 512;
-//        for (int i = 0; i < 30; i++) {
-//            x2 += incremento;
-//            posicion = new Vector2(x2 / MineKart.PPM, 200 / MineKart.PPM);
-//            arrayBananas.add(new Fruit(world, posicion, this, this.bananaTexture));
-//        }
-//    }
+    private void crearRocas() {
+        float cam_position_left = gameCam.position.x + 1; // desde un poco mas adelante del personaje
+        float cam_position_right = (gameCam.position.x + gameCam.viewportWidth / 2) + 1;
+        float random = MathUtils.random(cam_position_left, cam_position_right);
+
+//        FallingRock rock = new FallingRock(world, new Vector2(random, gameCam.position.y + gameCam.viewportHeight/2), this, rock_texture);
+//        rocas.add(rock);
+    }
 
     //getters
     public TextureAtlas getAtlas() {
@@ -141,7 +136,7 @@ public class PlayScreen implements Screen, Fase {
         kartPlayer.kartInput(dt);
         world.step(1 / 60f, 6, 2);
         kartPlayer.update(dt);
-        eyeball.update(dt);
+//        eyeball.update(dt, kartPlayer);
         hud.update(kartPlayer);
         gameCam.position.x = kartPlayer.b2Body.getPosition().x;
 //        gameCam.position.y = kartPlayer.b2Body.getPosition().y; TODO posible mecánica
@@ -153,10 +148,34 @@ public class PlayScreen implements Screen, Fase {
             listaCuerposEliminar.removeIndex(i);
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            kartPlayer.b2Body.setTransform(28, 3, 0);
+//            eyeball.eye_body.setTransform(kartPlayer.b2Body.getPosition().x + 2, kartPlayer.b2Body.getPosition().y, 0);
+            //192,19
+        }
+        if (kartPlayer.reaparecer) {
+            kartPlayer.reaparecer = false;
+            kartPlayer.b2Body.setTransform(300 / MineKart.PPM, 270 / MineKart.PPM, 0);
+//            eyeball.eye_body.setTransform(kartPlayer.b2Body.getPosition().x + 2, kartPlayer.b2Body.getPosition().y, 0);
+        }
+
+        deltaTimer += dt;
+        if (deltaTimer > 5f) {
+            deltaTimer = 0;
+            crearRocas();
+        }
+
+        for (int i = rocas.size - 1; i >= 0; i--) {
+            rocas.get(i).update(dt);
+            if (rocas.get(i).eliminar){
+                rocas.removeIndex(i);
+            }
+        }
+
         //FIXME extraer un un metodo
 //        for (Coin c :
 //            arrayMonedas) {
-//            if (c != null && c.recogida && !world.isLocked()) {
+//            if (c != null && c.contacto && !world.isLocked()) {
 //                arrayMonedas.removeValue(c, true);
 //                world.destroyBody(c.body);
 //                c.body = null;
@@ -166,7 +185,7 @@ public class PlayScreen implements Screen, Fase {
 
 //        for (Fruit f :
 //            arrayBananas) {
-//            if (f != null && f.recogida && !world.isLocked()) {
+//            if (f != null && f.contacto && !world.isLocked()) {
 //                arrayBananas.removeValue(f, true);
 //                world.destroyBody(f.body);
 //                f.body = null;
@@ -195,8 +214,13 @@ public class PlayScreen implements Screen, Fase {
 
         game.batch.setProjectionMatrix(gameCam.combined);
         game.batch.begin();
-        kartPlayer.draw(game.batch);
+//        kartPlayer.draw(game.batch);
 //        eyeball.draw(game.batch);
+
+        for (FallingRock r:
+             rocas) {
+            r.draw(game.batch);
+        }
 
         //FIXME extraer
 //        for (Coin c :
@@ -233,7 +257,7 @@ public class PlayScreen implements Screen, Fase {
 
     @Override
     public void hide() {
-
+        Gdx.input.setInputProcessor(null);
     }
 
     @Override
@@ -253,5 +277,10 @@ public class PlayScreen implements Screen, Fase {
     @Override
     public int getID() {
         return ID;
+    }
+
+    @Override
+    public OrthographicCamera getCamera() {
+        return gameCam;
     }
 }
