@@ -47,6 +47,15 @@ public class B2WorldCreator {
         crearMonedas();
     }
 
+    public void crearCheckPoints() {
+        int index = 0;
+        for (MapObject object : map.getLayers().get("checkpoints").getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            screen.respawnPoints.add(new CheckPoint(index, world, map, rectangle, screen));
+            index++;
+        }
+    }
+
     public void crearSuelo() {
         for (MapObject object : map.getLayers().get("suelo").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();

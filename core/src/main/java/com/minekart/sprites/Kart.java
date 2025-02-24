@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Array;
 import com.minekart.MineKart;
 import com.minekart.screens.Fase;
 import com.minekart.screens.PlayScreen;
+import com.minekart.tools.CheckPoint;
 
 public class Kart extends Sprite {
     public World world;
@@ -42,25 +43,25 @@ public class Kart extends Sprite {
     private Animation<TextureRegion> marioJump;
     private boolean runningRight;
 
-    Sprite minecart;
-    Sprite tabaco;
-    Sprite minecart_back;
+    private Sprite minecart;
+    private Sprite tabaco;
+    private Sprite minecart_back;
 
-    Texture textura_tabaco;
-    Texture textura_minecart;
-    Texture textura_minecart_back;
+    private Texture textura_tabaco;
+    private Texture textura_minecart;
+    private Texture textura_minecart_back;
 
-    Vector2 posicionActual;
-
-//    Fase screen;
+    private Vector2 posicionActual;
 
     public boolean reaparecer;
+
+    public CheckPoint ultimoCheckPoint;
 
     //test contacto
     public boolean enSuelo;
     public boolean enRampa;
 
-    //test de salto
+    //variables de salto
     private boolean isJumping;
     private float jumpTimer;
     private final float MAX_JUMP_TIME = 1f; // maximum time for jump boost (in seconds)
@@ -77,6 +78,7 @@ public class Kart extends Sprite {
         enSuelo = true;
         enRampa = false;
         reaparecer = false;
+        ultimoCheckPoint = null;
 
         textura_tabaco = new Texture("marlboro_64.png");
         textura_minecart = new Texture("minecart_64.png");
@@ -104,7 +106,7 @@ public class Kart extends Sprite {
     // propiedades fisicas
     public void defineKart() {
         BodyDef bDef = new BodyDef();
-        bDef.position.set(300 / MineKart.PPM, 270 / MineKart.PPM);
+        bDef.position.set(200 / MineKart.PPM, 270 / MineKart.PPM); // TODO posicion de inicio de cada nivel
         bDef.type = BodyDef.BodyType.DynamicBody;
         b2Body = world.createBody(bDef);
 

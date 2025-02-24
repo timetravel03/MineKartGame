@@ -20,9 +20,9 @@ import com.minekart.MineKart;
 import com.minekart.scenes.Hud;
 import com.minekart.sprites.Kart;
 import com.minekart.tools.B2WorldCreator;
+import com.minekart.tools.CheckPoint;
 import com.minekart.tools.WorldContactListener;
 
-import java.util.Dictionary;
 import java.util.Hashtable;
 
 public abstract class Nivel implements Screen {
@@ -57,13 +57,19 @@ public abstract class Nivel implements Screen {
     protected Hashtable<String, Texture> textureHashtable;
 
     //TODO imlpementar puntos de respawn
-    protected Array<Vector2> respawnPoints;
+    public Array<CheckPoint> respawnPoints;
     protected Vector2 ultRespawn;
 
     // cargar assets -> cargar colisiones -> renderizar extra
     public Nivel(MineKart game){
         // main
         this.game = game;
+
+        // variables de nivel
+        completada = false;
+        listaCuerposEliminar = new Array<Body>();
+        deltaTimer = 0;
+        respawnPoints = new Array<>();
 
         // camara
         gameCam = new OrthographicCamera();
@@ -85,19 +91,16 @@ public abstract class Nivel implements Screen {
         cargarColisiones();
         world.setContactListener(new WorldContactListener());
 
-        // variables de nivel
-        completada = false;
-        listaCuerposEliminar = new Array<Body>();
-        deltaTimer = 0;
-
         // kart
         kartPlayer = new Kart(world);
     }
 
+    // carga assets y el mapa
     abstract void cargarAssets();
 
     abstract void cargarColisiones();
 
+    // renderizar elementos específicos del nivel
     abstract void renderizarExtra(SpriteBatch batch);
 
     protected void update(float delta){
@@ -122,7 +125,7 @@ public abstract class Nivel implements Screen {
         // TODO extraer a un metodo y hacerlo dinámico (osea que haya diferentes puntos de respawn)?
         if (kartPlayer.reaparecer) {
             kartPlayer.reaparecer = false;
-            kartPlayer.b2Body.setTransform(300 / MineKart.PPM, 270 / MineKart.PPM, 0);
+            kartPlayer.b2Body.setTransform(kartPlayer.ultimoCheckPoint.getPosition(), 0);
         }
     }
 

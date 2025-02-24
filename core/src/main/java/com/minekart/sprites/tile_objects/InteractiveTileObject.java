@@ -47,12 +47,6 @@ public abstract class InteractiveTileObject {
 
     public abstract void onCollision(Kart player);
 
-    public void setCategoryFilter(short filterBit) {
-        Filter filter = new Filter();
-        filter.categoryBits = filterBit;
-        fixture.setFilterData(filter);
-    }
-
     // metodo que obtiene la celda en la que está el personaje
     public TiledMapTileLayer.Cell getCell() {
         TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get("gfx");

@@ -4,13 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.minekart.MineKart;
 import com.minekart.sprites.interactive_objects.FallingRock;
-import com.minekart.tools.Libreria;
+import com.minekart.tools.CheckPoint;
+import com.minekart.tools.Niveles;
 
 public class PrimerNivel extends Nivel {
     private Array<FallingRock> rocas;
@@ -29,7 +28,7 @@ public class PrimerNivel extends Nivel {
         deltaTimer += delta;
         if (deltaTimer > 5f) {
             deltaTimer = 0;
-            Libreria.crearRocas(gameCam, rocas, textureHashtable.get("rock"), world, this);
+            Niveles.crearRocas(gameCam, rocas, textureHashtable.get("rock"), world, this);
         }
 
         // update rocas
@@ -44,17 +43,24 @@ public class PrimerNivel extends Nivel {
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
             kartPlayer.b2Body.setTransform(28, 3, 0);
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
+            this.pause();
+        }
     }
 
     @Override
     void cargarAssets() {
-        map = mapLoader.load("test2.tmx");
-        textureHashtable.put("rock", new Texture("rocas/rock1.png"));
+        map = mapLoader.load("mapa_1.tmx");
+        textureHashtable.put("rock", new Texture("rocas/rock3.png"));
     }
 
     @Override
     void cargarColisiones() {
-        worldCreator.crearTodo();
+//        worldCreator.crearTodo();
+        worldCreator.crearSuelo();
+        worldCreator.crearMonedas();
+        worldCreator.crearCheckPoints();
     }
 
     @Override
