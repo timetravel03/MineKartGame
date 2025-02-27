@@ -18,6 +18,7 @@ import com.minekart.screens.Nivel;
 import com.minekart.sprites.tile_objects.CoinTile;
 import com.minekart.sprites.tile_objects.FruitTile;
 import com.minekart.sprites.tile_objects.GroundObstacle;
+import com.minekart.sprites.tile_objects.Meta;
 
 public class B2WorldCreator {
     BodyDef bDef;
@@ -36,6 +37,8 @@ public class B2WorldCreator {
         bDef = new BodyDef();
         shape = new PolygonShape();
         fDef = new FixtureDef();
+
+        crearMeta();
     }
 
     public void crearTodo() {
@@ -45,6 +48,13 @@ public class B2WorldCreator {
         crearRampas();
         crearRebotes();
         crearMonedas();
+    }
+
+    private void crearMeta(){
+        for (MapObject object : map.getLayers().get("meta").getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            new Meta(world, map, rectangle, screen);
+        }
     }
 
     public void crearCheckPoints() {

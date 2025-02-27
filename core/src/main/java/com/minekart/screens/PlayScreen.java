@@ -28,7 +28,7 @@ import com.minekart.tools.B2WorldCreator;
 import com.minekart.tools.WorldContactListener;
 
 public class PlayScreen implements Screen, Fase {
-    //pantalla completada
+    //pantalla completado
     public boolean completada;
 
     // main
@@ -194,7 +194,7 @@ public class PlayScreen implements Screen, Fase {
 //        }
 
 //        if (kartPlayer.b2Body.getPosition().x > 1024/MineKart.PPM){
-//            completada = true;
+//            completado = true;
 //            hud.worldLabel.setText("NIVEL COMPLETADO");
 //        }
     }

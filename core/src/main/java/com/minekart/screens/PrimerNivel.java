@@ -2,22 +2,28 @@ package com.minekart.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.minekart.MineKart;
 import com.minekart.sprites.interactive_objects.FallingRock;
-import com.minekart.tools.CheckPoint;
-import com.minekart.tools.Niveles;
+import com.minekart.tools.FuncionesNivel;
 
 public class PrimerNivel extends Nivel {
     private Array<FallingRock> rocas;
+    private float intevaloRocas = MathUtils.random(3f, 7f);
+    Music music = Gdx.audio.newMusic(Gdx.files.internal("song1.wav"));
 
     public PrimerNivel(MineKart game) {
         super(game);
         rocas = new Array<FallingRock>();
         b2dr = new Box2DDebugRenderer();
+        music.play();
+        music.setLooping(true);
+        music.setVolume(0.1f);
     }
 
     @Override
@@ -26,9 +32,10 @@ public class PrimerNivel extends Nivel {
 
         // crear rocas
         deltaTimer += delta;
-        if (deltaTimer > 5f) {
+        if (deltaTimer > intevaloRocas) {
             deltaTimer = 0;
-            Niveles.crearRocas(gameCam, rocas, textureHashtable.get("rock"), world, this);
+            intevaloRocas = MathUtils.random(3f, 7f);
+            FuncionesNivel.crearRocas(gameCam, rocas, textureHashtable.get("rock"), world, this);
         }
 
         // update rocas
@@ -41,7 +48,11 @@ public class PrimerNivel extends Nivel {
 
         // debug
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-            kartPlayer.b2Body.setTransform(28, 3, 0);
+            kartPlayer.b2Body.setTransform(70, 3, 0);
+        }
+
+        if (completado){
+            music.stop();
         }
     }
 
@@ -57,6 +68,8 @@ public class PrimerNivel extends Nivel {
         worldCreator.crearSuelo();
         worldCreator.crearMonedas();
         worldCreator.crearCheckPoints();
+        worldCreator.crearObstaculos();
+        worldCreator.crearFrutas();
     }
 
     @Override

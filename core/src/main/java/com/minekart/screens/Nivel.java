@@ -52,7 +52,7 @@ public abstract class Nivel implements Screen {
 
     // variables de nivel
     protected int id;
-    protected boolean completada;
+    public boolean completado;
     public Array<Body> listaCuerposEliminar;
     protected Hashtable<String, Texture> textureHashtable;
 
@@ -66,7 +66,7 @@ public abstract class Nivel implements Screen {
         this.game = game;
 
         // variables de nivel
-        completada = false;
+        completado = false;
         listaCuerposEliminar = new Array<Body>();
         deltaTimer = 0;
         respawnPoints = new Array<>();
@@ -164,6 +164,12 @@ public abstract class Nivel implements Screen {
         kartPlayer.draw(game.batch);
         renderizarExtra(game.batch);
         game.batch.end();
+
+        // comprueba si se ha completado el nivel, no puede ir en update porque se ejecuta antes de que se renderice el mundo y causaria problemas
+        if (completado){
+            this.dispose();
+            game.setScreen(new PantallaResultados(game, kartPlayer.getCantidad_monedas(), kartPlayer.getFrutas(), kartPlayer.getCantidad_vidas()));
+        }
     }
 
     @Override

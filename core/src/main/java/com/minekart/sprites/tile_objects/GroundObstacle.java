@@ -21,6 +21,7 @@ public class GroundObstacle extends InteractiveTileObject {
         Gdx.app.log("OBSTACLE","Collision");
         getCell().setTile(null);
         player.setCantidad_vidas(player.getCantidad_vidas()-1);
+        player.reaparecer = true;
         screen.removeBody(body);
     }
 }
