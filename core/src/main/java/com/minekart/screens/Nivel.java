@@ -125,7 +125,7 @@ public abstract class Nivel implements Screen {
         // TODO extraer a un metodo y hacerlo dinámico (osea que haya diferentes puntos de respawn)?
         if (kartPlayer.reaparecer) {
             kartPlayer.reaparecer = false;
-            kartPlayer.b2Body.setTransform(kartPlayer.ultimoCheckPoint.getPosition(), 0);
+            kartPlayer.b2Body.setTransform(kartPlayer.ultimoCheckPoint.puntoMasBajo(), 0);
         }
     }
 

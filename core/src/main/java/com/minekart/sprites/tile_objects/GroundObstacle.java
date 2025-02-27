@@ -23,5 +23,4 @@ public class GroundObstacle extends InteractiveTileObject {
         player.setCantidad_vidas(player.getCantidad_vidas()-1);
         screen.removeBody(body);
     }
-
 }

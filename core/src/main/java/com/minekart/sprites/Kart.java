@@ -68,13 +68,13 @@ public class Kart extends Sprite {
     private final float INITIAL_JUMP_FORCE = 3.0f; // initial jump impulse
     private final float JUMP_BOOST = 3.0f; // continuous upward force while holding
 
+    // TODO revisar bordes de hitboxes
     //STATES en principio no los voy a usar pero los dejo por que pueden venir bien
     public Kart(World world) {
         this.world = world;
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
-//        this.screen = screen;
         enSuelo = true;
         enRampa = false;
         reaparecer = false;

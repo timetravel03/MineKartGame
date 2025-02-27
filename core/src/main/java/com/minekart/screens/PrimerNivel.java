@@ -43,10 +43,6 @@ public class PrimerNivel extends Nivel {
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
             kartPlayer.b2Body.setTransform(28, 3, 0);
         }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
-            this.pause();
-        }
     }
 
     @Override
