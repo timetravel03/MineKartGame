@@ -13,6 +13,7 @@ import com.minekart.screens.PlayScreen;
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
+//TODO revisar el tema del delta time, si se ejecuta a mas de 60fps va demasiado rapido
 public class MineKart extends Game {
     public SpriteBatch batch;
     public static final int V_WIDTH = 600;
