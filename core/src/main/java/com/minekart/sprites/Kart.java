@@ -212,7 +212,7 @@ public class Kart extends Sprite {
         tabaco.setPosition(b2Body.getPosition().x - getWidth() / 2, posicionActual.y + 5 / MineKart.PPM);
         minecart_back.setPosition(b2Body.getPosition().x - getWidth() / 2, (b2Body.getPosition().y - getHeight() / 2) + 1 / MineKart.PPM);
 
-        // velocidad constante FIXME rompe las rampas (ahora menos)
+        // velocidad constante FIXME rompe las rampas (ahora menos) y al chocar con los bordes se queda pegado
         if (!enRampa) {
             b2Body.setLinearVelocity(new Vector2(1.5f, b2Body.getLinearVelocity().y));
         }

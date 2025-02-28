@@ -1,4 +1,4 @@
-package com.minekart.screens;
+package com.minekart.screens.niveles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

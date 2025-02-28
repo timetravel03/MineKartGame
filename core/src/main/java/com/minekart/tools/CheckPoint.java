@@ -6,9 +6,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
-import com.minekart.screens.Nivel;
+import com.minekart.screens.niveles.Nivel;
 import com.minekart.sprites.Kart;
-import com.minekart.sprites.interactive_objects.InteractiveObject;
 import com.minekart.sprites.tile_objects.InteractiveTileObject;
 
 public class CheckPoint extends InteractiveTileObject {

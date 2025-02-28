@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
+import com.minekart.screens.niveles.PrimerNivel;
+import com.minekart.screens.niveles.SegundoNivel;
 
 public class PantallaResultados implements Screen {
     private int monedas;
@@ -69,7 +71,7 @@ public class PantallaResultados implements Screen {
         stage.draw();
         if (Gdx.input.isTouched()) {
             this.dispose();
-            game.setScreen(new PrimerNivel(game));
+            game.setScreen(new SegundoNivel(game));
         }
     }
 

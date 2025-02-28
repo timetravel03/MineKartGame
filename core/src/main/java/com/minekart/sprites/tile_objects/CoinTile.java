@@ -4,8 +4,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
-import com.minekart.screens.Fase;
-import com.minekart.screens.Nivel;
+import com.minekart.screens.niveles.Nivel;
 import com.minekart.sprites.Kart;
 
 public class CoinTile extends InteractiveTileObject {

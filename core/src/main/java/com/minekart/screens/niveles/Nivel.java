@@ -1,4 +1,4 @@
-package com.minekart.screens;
+package com.minekart.screens.niveles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
 import com.minekart.scenes.Hud;
+import com.minekart.screens.PantallaResultados;
 import com.minekart.sprites.Kart;
 import com.minekart.tools.B2WorldCreator;
 import com.minekart.tools.CheckPoint;
