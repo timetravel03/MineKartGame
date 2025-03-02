@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
+import com.minekart.screens.niveles.Nivel;
 import com.minekart.screens.niveles.PrimerNivel;
 import com.minekart.screens.niveles.SegundoNivel;
 
@@ -28,13 +29,15 @@ public class PantallaResultados implements Screen {
     private Label monedasLabel;
     private Label frutasLabel;
     private Label vidasLabel;
+    private Nivel siguienteNivel;
 
-    public PantallaResultados(MineKart game, int monedas, int frutas, int vidas) {
+    public PantallaResultados(MineKart game, int monedas, int frutas, int vidas, Nivel siguienteNivel) {
         this.monedas = monedas;
         this.frutas = frutas;
         this.vidas = vidas;
         this.game = game;
         this.puntuacion = monedas * 10 + frutas * 20 + vidas * 50;
+        this.siguienteNivel = siguienteNivel;
 
         viewport = new FitViewport(MineKart.V_WIDTH, MineKart.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport);
@@ -45,7 +48,7 @@ public class PantallaResultados implements Screen {
         table.setFillParent(true);
 
         vidasLabel = new Label(String.format("Vidas: %d", vidas), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        frutasLabel = new Label(String.format("Frutas: %d", frutas), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        frutasLabel = new Label(String.format("Cajetillas: %d", frutas), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         monedasLabel = new Label(String.format("Monedas: %d", monedas), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         puntosLabel = new Label(String.format("Puntuación: %d", puntuacion), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         table.add(monedasLabel);
@@ -71,7 +74,7 @@ public class PantallaResultados implements Screen {
         stage.draw();
         if (Gdx.input.isTouched()) {
             this.dispose();
-            game.setScreen(new SegundoNivel(game));
+            game.setScreen(siguienteNivel);
         }
     }
 

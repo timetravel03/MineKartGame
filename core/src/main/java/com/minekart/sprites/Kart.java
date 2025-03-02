@@ -26,36 +26,24 @@ import com.minekart.tools.CheckPoint;
 public class Kart extends Sprite {
     public World world;
     public Body b2Body;
-    private TextureRegion marioStand;
-    public final float X_KART_SPEED = 1.5f;
     private int puntuacion;
     private int cantidad_monedas;
     private int cantidad_vidas;
     private int frutas;
 
-    public enum State {FALLING, JUMPING, STANDING, RUNNING}
-
-    public State currentState;
-    public State previousState;
-    private float stateTimer;
-
-    private Animation<TextureRegion> marioRun;
-    private Animation<TextureRegion> marioJump;
-    private boolean runningRight;
-
     private Sprite minecart;
     private Sprite tabaco;
-    private Sprite minecart_back;
 
     private Texture textura_tabaco;
     private Texture textura_minecart;
-    private Texture textura_minecart_back;
 
     private Vector2 posicionActual;
 
     public boolean reaparecer;
 
     public CheckPoint ultimoCheckPoint;
+
+    private Vector2 posicionInicial;
 
     //test contacto
     public boolean enSuelo;
@@ -64,36 +52,28 @@ public class Kart extends Sprite {
     //variables de salto
     private boolean isJumping;
     private float jumpTimer;
-    private final float MAX_JUMP_TIME = 1f; // maximum time for jump boost (in seconds)
-    private final float INITIAL_JUMP_FORCE = 3.0f; // initial jump impulse
-    private final float JUMP_BOOST = 3.0f; // continuous upward force while holding
+    private final float MAX_JUMP_TIME = 1f; // timepo maximo de impulso (en segundos)
+    private final float INITIAL_JUMP_FORCE = 3.0f; // impulso inicial de salto
+    private final float JUMP_BOOST = 3.0f; // fuerza continua hacia arriba mientras esta pulsado
 
     // TODO revisar bordes de hitboxes
-    //STATES en principio no los voy a usar pero los dejo por que pueden venir bien
     public Kart(World world) {
         this.world = world;
-        currentState = State.STANDING;
-        previousState = State.STANDING;
-        stateTimer = 0;
         enSuelo = true;
         enRampa = false;
         reaparecer = false;
         ultimoCheckPoint = null;
 
-        textura_tabaco = new Texture("marlboro_64.png");
-        textura_minecart = new Texture("minecart_64.png");
-        textura_minecart_back = new Texture("minecart_64_back.png");
+        textura_tabaco = new Texture("junimo_copia_d.png");
+        textura_minecart = new Texture("minekart.png");
 
         minecart = new Sprite(textura_minecart);
         tabaco = new Sprite(textura_tabaco);
-        minecart_back = new Sprite(textura_minecart_back);
 
         this.set(minecart);
-        this.setBounds(0, 0, 32 / MineKart.PPM, 32 / MineKart.PPM);
+        this.setBounds(0, 0, 36 / MineKart.PPM, 36 / MineKart.PPM);
         tabaco.setBounds(0, 0, this.getWidth(), this.getHeight());
-        minecart_back.setBounds(0, 0, this.getWidth(), this.getHeight());
 
-        runningRight = true;
         defineKart();
 
         posicionActual = new Vector2(b2Body.getPosition().x - minecart.getWidth() / 2, b2Body.getPosition().y - minecart.getHeight() / 2);
@@ -101,12 +81,13 @@ public class Kart extends Sprite {
         cantidad_monedas = 0;
         cantidad_vidas = 4;
         frutas = 0;
+        setOrigin(getWidth() / 2, getHeight() / 2);
     }
 
     // propiedades fisicas
     public void defineKart() {
         BodyDef bDef = new BodyDef();
-        bDef.position.set(200 / MineKart.PPM, 270 / MineKart.PPM); // TODO posicion de inicio de cada nivel
+        bDef.position.set(0, 0);
         bDef.type = BodyDef.BodyType.DynamicBody;
         b2Body = world.createBody(bDef);
 
@@ -118,18 +99,17 @@ public class Kart extends Sprite {
         fDef.friction = 0.1f;
         b2Body.createFixture(fDef).setUserData(this);
         circleShape.dispose();
+        enSuelo = false;
     }
 
-    public State getState() {
-        if (b2Body.getLinearVelocity().y > 0 || (b2Body.getLinearVelocity().y < 0 && previousState == State.JUMPING)) {
-            return State.JUMPING;
-        } else if (b2Body.getLinearVelocity().y < 0) {
-            return State.FALLING;
-        } else if (b2Body.getLinearVelocity().x != 0) {
-            return State.RUNNING;
-        } else {
-            return State.STANDING;
-        }
+    @Override
+    public void setRotation(float degrees) {
+        super.setRotation(degrees);
+        minecart.setRotation(degrees);
+    }
+
+    public void setPosicionInicial(Vector2 position) {
+        b2Body.setTransform(position, 0);
     }
 
     public int getFrutas() {
@@ -172,35 +152,34 @@ public class Kart extends Sprite {
 
     @Override
     public void draw(Batch batch) {
-        minecart_back.draw(batch);
         tabaco.draw(batch);
         super.draw(batch);
     }
 
     public void kartInput(float dt) {
-        // Jump start
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.justTouched()) && enSuelo) {
+        // logica del salto
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.justTouched()) && enSuelo && !isJumping) {
             isJumping = true;
             jumpTimer = 0;
-            // Initial jump impulse
-            b2Body.setLinearVelocity(b2Body.getLinearVelocity().x, 0); // Reset vertical velocity
+            // impulso inicial
+            b2Body.setLinearVelocity(b2Body.getLinearVelocity().x, 0); // resetear velocidad en y
             b2Body.applyLinearImpulse(new Vector2(0, INITIAL_JUMP_FORCE), b2Body.getWorldCenter(), true);
         }
 
         // Jump continuation
         if ((Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isTouched()) && isJumping) {
             if (jumpTimer < MAX_JUMP_TIME) {
-                // Apply continuous upward force while holding
+                // aplicar fuerza continua miientras haya tiempo y esta pulsado
                 b2Body.applyForceToCenter(new Vector2(0, JUMP_BOOST), true);
             }
         } else {
-            // If button/touch released, stop jumping
+            // si se suelta el btn de salto dejar de saltar
             isJumping = false;
         }
     }
 
     public void update(float dt) {
-        // Update jump timer
+        // update jump timer
         if (isJumping) {
             jumpTimer += dt;
             if (jumpTimer >= MAX_JUMP_TIME) {
@@ -208,16 +187,25 @@ public class Kart extends Sprite {
             }
         }
 
+        // update sprite
         setPosition(b2Body.getPosition().x - getWidth() / 2, (b2Body.getPosition().y - getHeight() / 2));
         tabaco.setPosition(b2Body.getPosition().x - getWidth() / 2, posicionActual.y + 5 / MineKart.PPM);
-        minecart_back.setPosition(b2Body.getPosition().x - getWidth() / 2, (b2Body.getPosition().y - getHeight() / 2) + 1 / MineKart.PPM);
 
-        // velocidad constante FIXME rompe las rampas (ahora menos) y al chocar con los bordes se queda pegado
+        // velocidad constante si no esta en rampa (para conseguir inercia)
         if (!enRampa) {
             b2Body.setLinearVelocity(new Vector2(1.5f, b2Body.getLinearVelocity().y));
         }
 
-        // TODO muerte por caida revisar
+        // rotar el personaje
+        float rotation = 0;
+        if (isJumping || (enRampa && !enSuelo)) {
+            rotation = 30;
+        } else if (enRampa && enSuelo) {
+            rotation = -30;
+        }
+        setRotation(rotation);
+
+        // muerte por caida
         if (b2Body.getPosition().y < 0) {
             setCantidad_vidas(getCantidad_vidas() - 1);
             reaparecer = true;

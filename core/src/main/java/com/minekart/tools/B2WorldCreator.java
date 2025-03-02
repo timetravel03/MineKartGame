@@ -59,6 +59,7 @@ public class B2WorldCreator {
     public void crearCheckPoints() {
         int index = 0;
         for (MapObject object : map.getLayers().get("checkpoints").getObjects().getByType(RectangleMapObject.class)) {
+            RectangleMapObject rectangleObject = (RectangleMapObject) object;
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
             screen.respawnPoints.add(new CheckPoint(index, world, map, rectangle, screen));
             index++;

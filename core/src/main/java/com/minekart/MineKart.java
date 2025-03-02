@@ -9,6 +9,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.minekart.screens.MainMenu;
 import com.minekart.screens.PlayScreen;
+import com.minekart.screens.niveles.Nivel;
+import com.minekart.screens.niveles.PrimerNivel;
+import com.minekart.screens.niveles.SegundoNivel;
+import com.minekart.screens.niveles.TercerNivel;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -19,11 +23,6 @@ public class MineKart extends Game {
     public static final int V_WIDTH = 600;
     public static final int V_HEIGHT = 385;
     public static final float PPM = 100;
-    public static final short DEFAULT_BIT = 1;
-    public static final short KART_BIT = 2;
-    public static final short OBSTACLE_BIT = 4;
-    public static final short COIN_BIT = 8;
-    public static final short DESTROYED_BIT = 16;
     public static final int COIN_VALUE = 100;
     public static final int FRUIT_VALUE = 500;
 
