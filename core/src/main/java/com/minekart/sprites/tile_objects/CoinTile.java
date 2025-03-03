@@ -1,5 +1,6 @@
 package com.minekart.sprites.tile_objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.World;
@@ -14,6 +15,7 @@ public class CoinTile extends InteractiveTileObject {
     }
 
     public void onCollision(Kart player) {
+        if (MineKart.vibracion) Gdx.input.vibrate(50);
         player.setPuntuacion(player.getPuntuacion() + MineKart.COIN_VALUE);
         player.setCantidad_monedas(player.getCantidad_monedas() + 1);
         getCell().setTile(null);

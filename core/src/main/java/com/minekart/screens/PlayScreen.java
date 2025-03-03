@@ -85,7 +85,7 @@ public class PlayScreen implements Screen, Fase {
         //camara
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(MineKart.V_WIDTH / MineKart.PPM, MineKart.V_HEIGHT / MineKart.PPM, gameCam);
-        hud = new Hud(game.batch);
+//        hud = new Hud(game.batch);
 
         //mapa
         mapLoader = new TmxMapLoader();
@@ -133,9 +133,9 @@ public class PlayScreen implements Screen, Fase {
     }
 
     public void update(float dt) {
-        kartPlayer.kartInput(dt);
+//        kartPlayer.kartInput(dt);
         world.step(1 / 60f, 6, 2);
-        kartPlayer.update(dt);
+//        kartPlayer.update(dt);
 //        eyeball.update(dt, kartPlayer);
         hud.update(kartPlayer);
         gameCam.position.x = kartPlayer.b2Body.getPosition().x;

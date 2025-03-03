@@ -2,6 +2,7 @@ package com.minekart.screens.niveles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -49,7 +50,7 @@ public abstract class Nivel implements Screen {
     protected B2WorldCreator worldCreator;
 
     // kart
-    protected Kart kartPlayer;
+    public Kart kartPlayer;
 
     //deltaTimer
     protected float deltaTimer;
@@ -91,12 +92,7 @@ public abstract class Nivel implements Screen {
         // camara
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(MineKart.V_WIDTH / MineKart.PPM, MineKart.V_HEIGHT / MineKart.PPM, gameCam);
-        hud = new Hud(game.batch);
-
-        //TODO por que no funciona esto??
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(hud.stage);
-        Gdx.input.setInputProcessor(multiplexer);
+        hud = new Hud(game.batch, this);
 
         // mapa
         textureHashtable = new Hashtable<>();
@@ -104,7 +100,6 @@ public abstract class Nivel implements Screen {
         cargarAssets(); // assets (tiene que estar en medio, porque necesita el maploader y renderer necesita el map asiq ajajajaj)
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / MineKart.PPM);
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
-
 
         // box2d
         world = new World(new Vector2(0, -7.5f), true);
@@ -143,7 +138,7 @@ public abstract class Nivel implements Screen {
         world.step(1 / 60f, 6, 2); // (se podria investigar que significan los parametros)
 
         // actualizar jugador, hud y camara(posicion) y procesar inputs
-        kartPlayer.update(delta);
+        kartPlayer.update(delta, Gdx.input.justTouched(), Gdx.input.isTouched());
         hud.update(kartPlayer);
         gameCam.position.x = kartPlayer.b2Body.getPosition().x;
 
@@ -166,7 +161,7 @@ public abstract class Nivel implements Screen {
 
     // pausar el juego
     public void togglePause() {
-        paused = hud.pause;
+        paused = !paused;
     }
 
     // agregar cuerpo a la lista de cuerpos a eliminar
@@ -186,17 +181,17 @@ public abstract class Nivel implements Screen {
 
     @Override
     public void show() {
-
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(hud.stage);
+        multiplexer.addProcessor(Gdx.input.getInputProcessor());
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
     @Override
     public void render(float delta) {
-        // con P se pausa el juego TODO crear un boton en el hud
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            togglePause();
-        }
 
-        // si esta pausado no se actualiza el mundo
+        // si esta pausado no se actualiza el mundo, depende de una variable del hud
+        paused = hud.pause;
         if (!paused) {
             update(delta);
         }
@@ -211,11 +206,6 @@ public abstract class Nivel implements Screen {
         //debug renderer
         b2dr.render(world, gameCam.combined);
 
-        //renderizar hud
-        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-        //TODO por que no funciona el boton de pausa?
-        hud.stage.act(delta);
-        hud.stage.draw();
 
         //renderizar el resto de cosas
         game.batch.setProjectionMatrix(gameCam.combined);
@@ -223,6 +213,12 @@ public abstract class Nivel implements Screen {
         kartPlayer.draw(game.batch);
         renderizarExtra(game.batch);
         game.batch.end();
+
+        //renderizar hud
+        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        //TODO por que no funciona el boton de pausa?
+        hud.stage.act(delta);
+        hud.stage.draw();
 
         //fade in
         if (fadeIn) {
@@ -237,11 +233,9 @@ public abstract class Nivel implements Screen {
                 kartPlayer.getCantidad_vidas(), siguienteNivel), delta);
         }
 
-        //cuando te quedas sin vidas te devuelve a la pantallade titulo
+        //cuando te quedas sin vidas te devuelve a la pantalla de titulo
         if (kartPlayer.getCantidad_vidas() < 0) {
-            if (!paused) {
-                togglePause();
-            }
+            hud.pause = true;
             fadeOutTo(new MainMenu(game), delta);
         }
     }

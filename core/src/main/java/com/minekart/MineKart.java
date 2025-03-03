@@ -25,9 +25,10 @@ public class MineKart extends Game {
     public static final float PPM = 100;
     public static final int COIN_VALUE = 100;
     public static final int FRUIT_VALUE = 500;
-
+    public static boolean vibracion;
     @Override
     public void create() {
+        vibracion = true;
         batch = new SpriteBatch();
         setScreen(new MainMenu(this));
     }

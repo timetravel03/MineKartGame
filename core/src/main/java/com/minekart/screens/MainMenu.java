@@ -2,21 +2,15 @@ package com.minekart.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -25,15 +19,26 @@ import com.minekart.screens.niveles.PrimerNivel;
 
 public class MainMenu extends ScreenAdapter {
     private Stage stage;
+    private Table table;
     private Viewport viewport;
     private Label titulo;
-    private Label jugar;
+
+    // aspecto
+    private Skin skin;
+
+    // menu principal
     private TextButton jugarButton;
     private TextButton salirButton;
     private TextButton opcionesButton;
-    private Slider slider;
-    private Table table;
-    private Skin skin;
+
+    //opciones
+    private Table tableOpciones;
+    private Slider sliderVolumen;
+    private TextButton volumenButton;
+    private TextButton vibracionButton;
+    private TextButton idiomaButton;
+    private TextButton creditosButton;
+    private TextButton atrasButton;
 
     MineKart game;
 
@@ -43,25 +48,15 @@ public class MainMenu extends ScreenAdapter {
         stage = new Stage(viewport);
         table = new Table();
         this.game = game;
+
+        tableOpciones = new Table();
+        tableOpciones.setFillParent(true);
         Gdx.input.setInputProcessor(stage);
         skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
         table.setFillParent(true);
 
+        //menu principal
         jugarButton = new TextButton("JUGAR", skin);
-        salirButton = new TextButton("SALIR", skin);
-        opcionesButton = new TextButton("OPCIONES", skin);
-
-        slider = new Slider(0, 100, 1, false, skin);
-
-        titulo = new Label("MineKartGame", skin);
-
-        table.add(titulo).padBottom(20f).row();
-        table.add(jugarButton).width(200).height(50).padBottom(10f).row();
-        table.add(opcionesButton).width(200).height(50).padBottom(10f).row();
-        table.add(salirButton).width(200).height(50).row();
-        table.add(slider).width(200).height(50).row();
-        table.center();
-
         jugarButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -71,6 +66,18 @@ public class MainMenu extends ScreenAdapter {
             }
         });
 
+        opcionesButton = new TextButton("OPCIONES", skin);
+        opcionesButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("MainMenu", "Opciones");
+                jugarButton.setVisible(false);
+                salirButton.setVisible(false);
+                opcionesButton.setVisible(false);
+            }
+        });
+
+        salirButton = new TextButton("SALIR", skin);
         salirButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -79,12 +86,19 @@ public class MainMenu extends ScreenAdapter {
             }
         });
 
-        opcionesButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("MainMenu", "Opciones");
-            }
-        });
+        //opciones
+        sliderVolumen = new Slider(0, 100, 1, false, skin);
+        vibracionButton = new TextButton("VIBRACION", skin);
+        idiomaButton = new TextButton("IDIOMA", skin);
+
+        titulo = new Label("MineKartGame", skin);
+
+        table.add(titulo).padBottom(20f).row();
+        table.add(jugarButton).width(200).height(50).padBottom(10f).row();
+        table.add(opcionesButton).width(200).height(50).padBottom(10f).row();
+        table.add(salirButton).width(200).height(50).row();
+        table.center();
+
 
         stage.addActor(table);
     }

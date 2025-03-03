@@ -1,5 +1,6 @@
 package com.minekart.sprites.tile_objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -18,6 +19,7 @@ public class FruitTile extends InteractiveTileObject {
 
     @Override
     public void onCollision(Kart player) {
+        if (MineKart.vibracion) Gdx.input.vibrate(50);
         player.setPuntuacion(player.getPuntuacion() + MineKart.FRUIT_VALUE);
         player.setFrutas(player.getFrutas() + 1);
         getCell().setTile(null);

@@ -156,9 +156,11 @@ public class Kart extends Sprite {
         super.draw(batch);
     }
 
-    public void kartInput(float dt) {
+    // este metodo se usa en el HUD ya que el resto de imputs estan ahí, pero podria estar en la clase Nivel
+    public void kartInput(boolean justPressed, boolean isTouched) {
+
         // logica del salto
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.justTouched()) && enSuelo && !isJumping) {
+        if (justPressed && enSuelo && !isJumping) {
             isJumping = true;
             jumpTimer = 0;
             // impulso inicial
@@ -167,7 +169,7 @@ public class Kart extends Sprite {
         }
 
         // Jump continuation
-        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isTouched()) && isJumping) {
+        if (isTouched && isJumping) {
             if (jumpTimer < MAX_JUMP_TIME) {
                 // aplicar fuerza continua miientras haya tiempo y esta pulsado
                 b2Body.applyForceToCenter(new Vector2(0, JUMP_BOOST), true);
@@ -176,9 +178,10 @@ public class Kart extends Sprite {
             // si se suelta el btn de salto dejar de saltar
             isJumping = false;
         }
+
     }
 
-    public void update(float dt) {
+    public void update(float dt, boolean justPressed, boolean isTouched) {
         // update jump timer
         if (isJumping) {
             jumpTimer += dt;
@@ -210,8 +213,6 @@ public class Kart extends Sprite {
             setCantidad_vidas(getCantidad_vidas() - 1);
             reaparecer = true;
         }
-
-        kartInput(dt);
     }
 
 }
