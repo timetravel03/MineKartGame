@@ -3,6 +3,7 @@ package com.minekart;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,8 +27,10 @@ public class MineKart extends Game {
     public static final int COIN_VALUE = 100;
     public static final int FRUIT_VALUE = 500;
     public static boolean vibracion;
+    public static int puntacionActual;
     @Override
     public void create() {
+        puntacionActual = 0;
         vibracion = true;
         batch = new SpriteBatch();
         setScreen(new MainMenu(this));

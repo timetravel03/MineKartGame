@@ -14,6 +14,7 @@ import com.minekart.MineKart;
 import com.minekart.screens.niveles.Nivel;
 import com.minekart.sprites.Kart;
 
+// De esta clase hereadan las clases CoinTile, FruitTile, GroundObstacle y Meta
 public abstract class InteractiveTileObject {
     protected World world;
     protected TiledMap map;

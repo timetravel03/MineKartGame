@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
 import com.minekart.scenes.Hud;
 import com.minekart.screens.MainMenu;
+import com.minekart.screens.PantallaMuerte;
 import com.minekart.screens.PantallaResultados;
 import com.minekart.sprites.Kart;
 import com.minekart.tools.B2WorldCreator;
@@ -204,7 +205,7 @@ public abstract class Nivel implements Screen {
         mapRenderer.render();
 
         //debug renderer
-        b2dr.render(world, gameCam.combined);
+//        b2dr.render(world, gameCam.combined);
 
 
         //renderizar el resto de cosas
@@ -227,16 +228,18 @@ public abstract class Nivel implements Screen {
 
         // comprueba si se ha completado el nivel, no puede ir en update porque se ejecuta antes de que se renderice el mundo y causaria problemas
         if (completado) {
+            hud.pause = true;
             fadeOutTo(new PantallaResultados(game,
-                kartPlayer.getCantidad_monedas(),
+                kartPlayer.getPuntuacion(),
                 kartPlayer.getFrutas(),
+                kartPlayer.getCantidad_monedas(),
                 kartPlayer.getCantidad_vidas(), siguienteNivel), delta);
         }
 
         //cuando te quedas sin vidas te devuelve a la pantalla de titulo
         if (kartPlayer.getCantidad_vidas() < 0) {
             hud.pause = true;
-            fadeOutTo(new MainMenu(game), delta);
+            fadeOutTo(new PantallaMuerte(game, kartPlayer.getPuntuacion()), delta);
         }
     }
 
@@ -283,6 +286,7 @@ public abstract class Nivel implements Screen {
     @Override
     public void resize(int width, int height) {
         gamePort.update(width, height); //MUY IMPORTANTE
+        hud.resize(width, height);
     }
 
     @Override

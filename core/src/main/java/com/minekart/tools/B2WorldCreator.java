@@ -19,6 +19,7 @@ import com.minekart.sprites.tile_objects.FruitTile;
 import com.minekart.sprites.tile_objects.GroundObstacle;
 import com.minekart.sprites.tile_objects.Meta;
 
+// Clase que crea el mundo de Box2D a partir de un mapa de Tiled
 public class B2WorldCreator {
     BodyDef bDef;
     PolygonShape shape;

@@ -35,6 +35,7 @@ public class Hud implements Disposable {
     private TextButton pauseButton;
     public boolean pause;
     private Nivel nivel;
+    private Label pauseLabel;
 
     public Hud(SpriteBatch sb, Nivel nivel) {
         viewport = new FitViewport(MineKart.V_WIDTH, MineKart.V_HEIGHT, new OrthographicCamera());
@@ -49,7 +50,9 @@ public class Hud implements Disposable {
         vidasLabel = new Label(String.format("Vidas: %d", 4), skin);
         progresoLabel = new Label(String.format("Progreso: %d", 0), skin);
         frutasLabel = new Label(String.format("Cajetillas: x%d", 0), skin);
-        coinsLabel = new Label(String.format("Monedas: x%d", 0), skin);
+        coinsLabel = new Label(String.format("Lereles: x%d", 0), skin);
+        pauseLabel = new Label("PAUSE", skin);
+        pauseLabel.setVisible(false);
 
         //FIXME arreglar el bton de pause
         pauseButton = new TextButton("II", skin);
@@ -58,19 +61,25 @@ public class Hud implements Disposable {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Hud", "Pause");
                 pause = !pause;
+                pauseLabel.setVisible(pause);
             }
         });
 
         table.add(vidasLabel).expandX().padTop(5f);
         table.add(pauseButton).expandX().padTop(10f);
         table.row();
-        table.add(frutasLabel);
+        table.add(frutasLabel).padTop(5f);
         table.row();
-        table.add(coinsLabel);
+        table.add(coinsLabel).padTop(10f);
+
+        // tabla solo para el label de pause, que este centrado
+        Table pauseTable = new Table();
+        pauseTable.setFillParent(true);
+        pauseTable.center();
+        pauseTable.add(pauseLabel);
 
         stage.addActor(table);
-
-
+        stage.addActor(pauseTable);
     }
 
     // este metodo solo exite para evitar que el jugador salte cuando se toca algun boton del hud, no se si existe alguna mejor forma de hacerlo
@@ -86,14 +95,17 @@ public class Hud implements Disposable {
 
     public void update(Kart player) {
         kartInputProcessing(player);
-        coinsLabel.setText(String.format("Monedas: x%d", player.getCantidad_monedas()));
-        vidasLabel.setText(String.format("Vidas: %d", player.getCantidad_vidas()));
-        frutasLabel.setText(String.format("Frutas: x%d", player.getFrutas()));
-//        progresoLabel.setText(String.format("X: %.0f Y: %.0f", player.b2Body.getPosition().x,  player.b2Body.getPosition().y));
+        coinsLabel.setText(String.format("Lereles: x%d", player.getCantidad_monedas()));
+        if (player.getCantidad_vidas() >= 0) vidasLabel.setText(String.format("Vidas: %d", player.getCantidad_vidas()));
+        frutasLabel.setText(String.format("Cajetillas: x%d", player.getFrutas()));
     }
 
     @Override
     public void dispose() {
         stage.dispose();
+    }
+
+    public void resize(int width, int height) {
+        viewport.update(width, height);
     }
 }

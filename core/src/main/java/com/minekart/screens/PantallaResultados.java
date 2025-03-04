@@ -2,25 +2,22 @@ package com.minekart.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
 import com.minekart.screens.niveles.Nivel;
-import com.minekart.screens.niveles.PrimerNivel;
-import com.minekart.screens.niveles.SegundoNivel;
 
 public class PantallaResultados implements Screen {
     private int monedas;
     private int frutas;
     private int vidas;
-    private int puntuacion;
+    private int puntuacion_nivel;
     private Viewport viewport;
     private Stage stage;
     private Table table;
@@ -30,14 +27,14 @@ public class PantallaResultados implements Screen {
     private Label frutasLabel;
     private Label vidasLabel;
     private Nivel siguienteNivel;
+    private Skin skin;
 
-    public PantallaResultados(MineKart game, int monedas, int frutas, int vidas, Nivel siguienteNivel) {
-        this.monedas = monedas;
-        this.frutas = frutas;
+    public PantallaResultados(MineKart game, int puntuacion_nivel, int frutas, int monedas, int vidas, Nivel siguienteNivel) {
         this.vidas = vidas;
         this.game = game;
-        this.puntuacion = monedas * 10 + frutas * 20 + vidas * 50;
+        this.puntuacion_nivel = puntuacion_nivel + (vidas * 50);
         this.siguienteNivel = siguienteNivel;
+        skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
         viewport = new FitViewport(MineKart.V_WIDTH, MineKart.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport);
@@ -47,10 +44,10 @@ public class PantallaResultados implements Screen {
         table.center();
         table.setFillParent(true);
 
-        vidasLabel = new Label(String.format("Vidas: %d", vidas), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        frutasLabel = new Label(String.format("Cajetillas: %d", frutas), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        monedasLabel = new Label(String.format("Monedas: %d", monedas), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        puntosLabel = new Label(String.format("Puntuación: %d", puntuacion), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        vidasLabel = new Label(String.format("Vidas: %d", vidas), skin);
+        frutasLabel = new Label(String.format("Cajetillas: %d", frutas), skin);
+        monedasLabel = new Label(String.format("Monedas: %d", monedas), skin);
+        puntosLabel = new Label(String.format("Puntuación: %d", this.puntuacion_nivel), skin);
         table.add(monedasLabel);
         table.row();
         table.add(frutasLabel);
@@ -60,6 +57,8 @@ public class PantallaResultados implements Screen {
         table.add(puntosLabel);
 
         stage.addActor(table);
+
+        game.puntacionActual += this.puntuacion_nivel;
     }
 
     @Override
