@@ -16,13 +16,15 @@ public class WorldContactListener implements ContactListener {
         Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
 
-        // con que sea instancia de la clase vale jejeje
+        // contacto con objetos del tiled
         if ((fixA.getUserData() instanceof InteractiveTileObject || fixB.getUserData() instanceof InteractiveTileObject)) {
             InteractiveTileObject g = fixA.getUserData() instanceof InteractiveTileObject ? (InteractiveTileObject) fixA.getUserData() : (InteractiveTileObject) fixB.getUserData();
             Kart k = fixA.getUserData() instanceof Kart ? (Kart) fixA.getUserData() : (Kart) fixB.getUserData();
             g.onCollision(k);
             Gdx.app.log("BEGIN CONTACT", "InteractiveTileObject");
         }
+
+        // contacto con objetos interactivos
         if ((fixA.getUserData() instanceof InteractiveObject || fixB.getUserData() instanceof InteractiveObject)) {
             InteractiveObject g = fixA.getUserData() instanceof InteractiveObject ? (InteractiveObject) fixA.getUserData() : (InteractiveObject) fixB.getUserData();
             Kart k = fixA.getUserData() instanceof Kart ? (Kart) fixA.getUserData() : (Kart) fixB.getUserData();
@@ -30,18 +32,22 @@ public class WorldContactListener implements ContactListener {
             Gdx.app.log("BEGIN CONTACT", "InteractiveObject");
         }
 
+        // contacto con rampas
         if ((fixA.getUserData() == "rampa" || fixB.getUserData() == "rampa")) {
             Kart k = fixA.getUserData() instanceof Kart ? (Kart) fixA.getUserData() : (Kart) fixB.getUserData();
             k.enRampa = true;
             k.enSuelo = true;
             Gdx.app.log("BEGIN CONTACT", "Rampa");
         }
+
+        // contacto con suelo
         if ((fixA.getUserData() == "suelo" || fixB.getUserData() == "suelo")) {
             Kart k = fixA.getUserData() instanceof Kart ? (Kart) fixA.getUserData() : (Kart) fixB.getUserData();
             k.enSuelo = true;
             k.enRampa = false;
             Gdx.app.log("BEGIN CONTACT", "Suelo");
         }
+
         //checkpoints
         if ((fixA.getUserData() instanceof CheckPoint || fixB.getUserData() instanceof CheckPoint)) {
             CheckPoint c = fixA.getUserData() instanceof CheckPoint ? (CheckPoint) fixA.getUserData() : (CheckPoint) fixB.getUserData();
@@ -55,11 +61,15 @@ public class WorldContactListener implements ContactListener {
     public void endContact(Contact contact) {
         Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
+
+        // se separa del suelo
         if ((fixA.getUserData() == "suelo" || fixB.getUserData() == "suelo")) {
             Kart k = fixA.getUserData() instanceof Kart ? (Kart) fixA.getUserData() : (Kart) fixB.getUserData();
             k.enSuelo = false;
             Gdx.app.log("END CONTACT", "Suelo");
         }
+
+        // se separa de la rampa
         if ((fixA.getUserData() == "rampa" || fixB.getUserData() == "rampa")) {
             Kart k = fixA.getUserData() instanceof Kart ? (Kart) fixA.getUserData() : (Kart) fixB.getUserData();
             k.enSuelo = false;

@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.minekart.MineKart;
 
+// Pantalla que se muestra cuando el jugador muere, incluye un campo de texto para introducir el nombre del jugador
 public class PantallaMuerte extends ScreenAdapter {
     private Stage stage;
     private TextField inputField;
@@ -29,21 +30,21 @@ public class PantallaMuerte extends ScreenAdapter {
         Table table = new Table();
         table.setFillParent(true);
 
-        inputField = new TextField("", skin);
+        inputField = new TextField("", skin);   // TODO el teclado cubre toda la pantalla
         acceptButton = new TextButton("OK", skin);
 
-        table.add(new Label("Has muerto", skin)).padBottom(10f).row();
-        table.add(new Label("Tu puntuación es: " + (puntuacion_nivel + game.puntacionActual), skin)).padBottom(10f).row();
-        table.add(new Label("Introduce tu nombre:", skin)).padBottom(10f).row();
+        table.add(new Label(MineKart.myBundle.get("youDied"), skin)).padBottom(10f).row();
+        table.add(new Label(MineKart.myBundle.get("score") + ":" + (puntuacion_nivel + game.puntacionActual), skin)).padBottom(10f).row();
+        table.add(new Label(MineKart.myBundle.get("inputName") + ":", skin)).padBottom(10f).row();
         table.add(inputField).width(200).padBottom(10f).row();
         table.add(acceptButton).width(200).height(50).padBottom(10f).row();
-
 
         acceptButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                guardarPuntuacion(inputField.getText(), game.puntacionActual + puntuacion_nivel);
+                guardarPuntuacion(inputField.getText(), MineKart.puntacionActual + puntuacion_nivel);
                 game.setScreen(new MainMenu(game));
+                MineKart.puntacionActual = 0;
             }
         });
 
@@ -52,21 +53,20 @@ public class PantallaMuerte extends ScreenAdapter {
         Gdx.input.setInputProcessor(stage);
     }
 
+    // Guarda la puntuación del jugador en las preferencias del juego (revisar)
     public void guardarPuntuacion(String nombre, int puntuacion) {
-        if (nombre.equals("")) {
-            nombre = "ANONIMO";
-        }
-
         Preferences prefs = Gdx.app.getPreferences("minekart-preferences");
 
+        if (nombre.equals("")) {
+            nombre = MineKart.myBundle.get("anon");
+        }
         prefs.putString("last-player", nombre);
-
-        int score = puntuacion;
-        prefs.putInteger(nombre + "-score", score);
+        prefs.putInteger(nombre + "-score", puntuacion);
 
         String highScores = prefs.getString("highscores", "");
-        prefs.putString("highscores", highScores + nombre + ":" + score + ",");
+        prefs.putString("highscores", highScores + nombre + ":" + puntuacion + ",");
 
+        // guarda las preferencias
         prefs.flush();
     }
 

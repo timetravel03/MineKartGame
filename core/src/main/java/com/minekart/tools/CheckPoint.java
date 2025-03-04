@@ -10,6 +10,7 @@ import com.minekart.screens.niveles.Nivel;
 import com.minekart.sprites.Kart;
 import com.minekart.sprites.tile_objects.InteractiveTileObject;
 
+//Clase que representa un checkpoint en el mapa
 public class CheckPoint extends InteractiveTileObject {
     public int id;
     public boolean cruzado;
@@ -22,10 +23,12 @@ public class CheckPoint extends InteractiveTileObject {
         fixture.setUserData(this);
     }
 
+    // Devuelve la posición del checkpoint
     public Vector2 getPosition() {
         return body.getPosition();
     }
 
+    // punto de la parte más baja del checkpoint (suelo)
     public Vector2 puntoMasBajo() {
         return new Vector2(bounds.getX() / MineKart.PPM, (bounds.getY() + 16) / MineKart.PPM);
     }

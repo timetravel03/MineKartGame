@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
@@ -37,6 +38,7 @@ public class Hud implements Disposable {
     private Nivel nivel;
     private Label pauseLabel;
 
+
     public Hud(SpriteBatch sb, Nivel nivel) {
         viewport = new FitViewport(MineKart.V_WIDTH, MineKart.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, sb);
@@ -47,11 +49,11 @@ public class Hud implements Disposable {
         table.top();
         table.setFillParent(true);
 
-        vidasLabel = new Label(String.format("Vidas: %d", 4), skin);
+        vidasLabel = new Label(String.format("%s: %d", MineKart.myBundle.get("lives"), 4), skin);
         progresoLabel = new Label(String.format("Progreso: %d", 0), skin);
-        frutasLabel = new Label(String.format("Cajetillas: x%d", 0), skin);
-        coinsLabel = new Label(String.format("Lereles: x%d", 0), skin);
-        pauseLabel = new Label("PAUSE", skin);
+        frutasLabel = new Label(String.format("%s: %d", MineKart.myBundle.get("packs"), 0), skin);
+        coinsLabel = new Label(String.format("%s: %d", MineKart.myBundle.get("coins"), 0), skin);
+        pauseLabel = new Label(MineKart.myBundle.get("pause"), skin);
         pauseLabel.setVisible(false);
 
         //FIXME arreglar el bton de pause
@@ -95,9 +97,10 @@ public class Hud implements Disposable {
 
     public void update(Kart player) {
         kartInputProcessing(player);
-        coinsLabel.setText(String.format("Lereles: x%d", player.getCantidad_monedas()));
-        if (player.getCantidad_vidas() >= 0) vidasLabel.setText(String.format("Vidas: %d", player.getCantidad_vidas()));
-        frutasLabel.setText(String.format("Cajetillas: x%d", player.getFrutas()));
+        coinsLabel.setText(String.format("%s: %d", MineKart.myBundle.get("coins"), player.getCantidad_monedas()));
+        if (player.getCantidad_vidas() >= 0)
+            vidasLabel.setText(String.format("%s: %d", MineKart.myBundle.get("lives"), player.getCantidad_vidas()));
+        frutasLabel.setText(String.format("%s: %d", MineKart.myBundle.get("packs"), player.getFrutas()));
     }
 
     @Override

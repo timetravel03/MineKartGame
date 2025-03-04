@@ -10,6 +10,7 @@ import com.minekart.screens.niveles.Nivel;
 import com.minekart.sprites.interactive_objects.FallingRock;
 
 public class FuncionesNivel {
+    // Crea una roca en una posición aleatoria en el eje x y en la parte superior de la pantalla
     public static void crearRocas(OrthographicCamera gameCam, Array<FallingRock> rocas, Texture rock_texture, World world, Nivel nivel) {
         float cam_position_left = gameCam.position.x + 1; // desde un poco mas adelante del personaje
         float cam_position_right = (gameCam.position.x + gameCam.viewportWidth / 2) + 1;

@@ -38,6 +38,7 @@ public class B2WorldCreator {
         shape = new PolygonShape();
         fDef = new FixtureDef();
 
+        // Todos los niveles tienen meta
         crearMeta();
     }
 
@@ -134,7 +135,7 @@ public class B2WorldCreator {
         }
     }
 
-    // chatgpt (revisar y entender)
+    // funcion que convierte un poligono de LibGDX a un PolygonShape de Box2D
     private PolygonShape convertPolygonToPolygonShape(Polygon polygon, float pixelsPerMeter) {
         PolygonShape polygonShape = new PolygonShape();
 

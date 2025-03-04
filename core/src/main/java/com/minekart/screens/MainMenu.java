@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
@@ -25,10 +26,11 @@ import com.minekart.screens.niveles.TercerNivel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+// clase del menu principal
 public class MainMenu extends ScreenAdapter {
     private Stage stage;
     private Table mainTable;
@@ -73,26 +75,38 @@ public class MainMenu extends ScreenAdapter {
     private MineKart game;
     private Music menuMusic;
 
+    // idioma
+
+
     public MainMenu(MineKart game) {
-        game.puntacionActual = 0;
+        // variables varias
         viewport = new FitViewport(MineKart.V_WIDTH, MineKart.V_HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport);
+        this.game = game;
+        skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
+        Gdx.input.setInputProcessor(stage);
+
+        //idioma base (español)
+        if (MineKart.locale != null) {
+            MineKart.myBundle = I18NBundle.createBundle(MineKart.baseFileHandle, MineKart.locale);
+        } else {
+            MineKart.myBundle = I18NBundle.createBundle(MineKart.baseFileHandle);
+        }
+
+        // musica de fondo
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/drone.ogg"));
+        menuMusic.setLooping(true);
+        menuMusic.setVolume(0.5f);
+        menuMusic.play();
+
+        // creacion de las tablas
         mainTable = new Table();
         optionsTable = new Table();
         recordsTable = new Table();
         creditsTable = new Table();
         levelSelectTable = new Table();
 
-        this.game = game;
-
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/drone.ogg"));
-        menuMusic.setLooping(true);
-        menuMusic.setVolume(0.5f);
-        menuMusic.play();
-
-        Gdx.input.setInputProcessor(stage);
-        skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
-
+        // tablas rellenan la pantalla
         mainTable.setFillParent(true);
         optionsTable.setFillParent(true);
         recordsTable.setFillParent(true);
@@ -105,12 +119,14 @@ public class MainMenu extends ScreenAdapter {
         creditsTable.setVisible(false);
         levelSelectTable.setVisible(false);
 
+        // creacion de los elementos de los menus
         setupMainMenu();
         setupOptionsMenu();
         setupRecordsMenu();
         setupLevelSelectMenu();
         setupCreditsMenu();
 
+        // añadir las tablas a la pantalla
         stage.addActor(mainTable);
         stage.addActor(optionsTable);
         stage.addActor(recordsTable);
@@ -118,10 +134,11 @@ public class MainMenu extends ScreenAdapter {
         stage.addActor(levelSelectTable);
     }
 
+    // menu principal
     private void setupMainMenu() {
-        titulo = new Label("MineKartGame", skin);
+        titulo = new Label(MineKart.myBundle.get("title"), skin);
 
-        jugarButton = new TextButton("JUGAR", skin);
+        jugarButton = new TextButton(MineKart.myBundle.get("play"), skin);
         jugarButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -129,10 +146,11 @@ public class MainMenu extends ScreenAdapter {
                 menuMusic.stop();
                 game.setScreen(new PrimerNivel(game));
                 dispose();
+                game.puntacionActual = 0;
             }
         });
 
-        opcionesButton = new TextButton("OPCIONES", skin);
+        opcionesButton = new TextButton(MineKart.myBundle.get("options"), skin);
         opcionesButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -142,7 +160,7 @@ public class MainMenu extends ScreenAdapter {
             }
         });
 
-        recordsButton = new TextButton("RECORDS", skin);
+        recordsButton = new TextButton(MineKart.myBundle.get("records"), skin);
         recordsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -152,7 +170,7 @@ public class MainMenu extends ScreenAdapter {
             }
         });
 
-        salirButton = new TextButton("SALIR", skin);
+        salirButton = new TextButton(MineKart.myBundle.get("exit"), skin);
         salirButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -169,30 +187,31 @@ public class MainMenu extends ScreenAdapter {
         mainTable.center();
     }
 
+    // menu de opciones
     private void setupOptionsMenu() {
-        Label optionsTitle = new Label("OPCIONES", skin);
+        Label optionsTitle = new Label(MineKart.myBundle.get("options"), skin);
 
-        volumeLabel = new Label("Volumen: 50%", skin);
+        volumeLabel = new Label(MineKart.myBundle.get("volume") + ": 50%", skin);
         sliderVolumen = new Slider(0, 100, 1, false, skin);
         sliderVolumen.setValue(50);
         sliderVolumen.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                volumeLabel.setText("Volumen: " + (int) sliderVolumen.getValue() + "%");
+                volumeLabel.setText(MineKart.myBundle.get("volume") + ": " + (int) sliderVolumen.getValue() + "%");
                 menuMusic.setVolume(sliderVolumen.getValue() / 100f);
             }
         });
 
-        vibracionButton = new TextButton(MineKart.vibracion ? "VIBRAR: ON" : "VIBRAR: OFF", skin);
+        vibracionButton = new TextButton(MineKart.vibracion ? MineKart.myBundle.get("vibrate") + ": ON" : MineKart.myBundle.get("vibrate") + ": OFF", skin);
         vibracionButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 MineKart.vibracion = !MineKart.vibracion;
-                vibracionButton.setText(MineKart.vibracion ? "VIBRAR: ON" : "VIBRAR: OFF");
+                vibracionButton.setText(MineKart.vibracion ? MineKart.myBundle.get("vibrate") + ": ON" : MineKart.myBundle.get("vibrate") + ": OFF");
             }
         });
 
-        levelSelectButton = new TextButton("NIVELES", skin);
+        levelSelectButton = new TextButton(MineKart.myBundle.get("courses"), skin);
         levelSelectButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -201,20 +220,25 @@ public class MainMenu extends ScreenAdapter {
             }
         });
 
-        idiomaButton = new TextButton("IDIOMA: ES", skin);
+        String currentLanguage = MineKart.locale == null ? "ES" : "EN";
+        idiomaButton = new TextButton(MineKart.myBundle.get("language") + ": " + currentLanguage, skin);
         idiomaButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String currentText = idiomaButton.getText().toString();
                 if (currentText.contains("ES")) {
-                    idiomaButton.setText("IDIOMA: EN");
+                    idiomaButton.setText(MineKart.myBundle.get("language") + ": EN");
+                    MineKart.locale = new Locale("en", "GB");
                 } else {
-                    idiomaButton.setText("IDIOMA: ES");
+                    idiomaButton.setText(MineKart.myBundle.get("language") + ": ES");
+                    MineKart.locale = null;
                 }
+                game.setScreen(new MainMenu(game));
+                dispose();
             }
         });
 
-        creditosButton = new TextButton("CREDITOS", skin);
+        creditosButton = new TextButton(MineKart.myBundle.get("credits"), skin);
         creditosButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -223,7 +247,7 @@ public class MainMenu extends ScreenAdapter {
             }
         });
 
-        atrasButton = new TextButton("ATRAS", skin);
+        atrasButton = new TextButton(MineKart.myBundle.get("back"), skin);
         atrasButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -243,7 +267,7 @@ public class MainMenu extends ScreenAdapter {
         optionsTable.center();
     }
 
-    // TODO REVISAR
+    // TODO REVISAR carga los records de las preferencias, ordenados por puntuacion
     private void loadHighScores() {
         Preferences prefs = Gdx.app.getPreferences("minekart-preferences");
         String highScores = prefs.getString("highscores", "");
@@ -292,6 +316,7 @@ public class MainMenu extends ScreenAdapter {
         }
     }
 
+    // pantalla de records
     private void setupRecordsMenu() {
         Label recordsTitle = new Label("TOP 5 RECORDS", skin);
 
@@ -301,7 +326,7 @@ public class MainMenu extends ScreenAdapter {
         }
         loadHighScores();
 
-        recordsBackButton = new TextButton("ATRAS", skin);
+        recordsBackButton = new TextButton(MineKart.myBundle.get("back"), skin);
         recordsBackButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -318,11 +343,12 @@ public class MainMenu extends ScreenAdapter {
         recordsTable.center();
     }
 
+    // pantalla de seleccion de nivel
     private void setupLevelSelectMenu() {
-        Label levelSelectTitle = new Label("SELECCIONAR NIVEL", skin);
+        Label levelSelectTitle = new Label(MineKart.myBundle.get("selectCourse"), skin);
 
         levelButtons = new TextButton[4];
-        String[] levelNames = {"NIVEL 1", "NIVEL 2", "NIVEL 3", "NIVEL 4"};
+        String[] levelNames = {MineKart.myBundle.get("course") + " 1", MineKart.myBundle.get("course") + " 2", MineKart.myBundle.get("course") + " 3", MineKart.myBundle.get("course") + " 4"};
 
         for (int i = 0; i < 4; i++) {
             final int levelIndex = i;
@@ -354,7 +380,7 @@ public class MainMenu extends ScreenAdapter {
             });
         }
 
-        levelSelectBackButton = new TextButton("ATRAS", skin);
+        levelSelectBackButton = new TextButton(MineKart.myBundle.get("back"), skin);
         levelSelectBackButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -371,15 +397,21 @@ public class MainMenu extends ScreenAdapter {
         levelSelectTable.center();
     }
 
+    // pantalla de creditos
     private void setupCreditsMenu() {
-        Label creditsTitle = new Label("CREDITOS", skin);
+        Label creditsTitle = new Label(MineKart.myBundle.get("credits"), skin);
 
-        creditLabels = new Label[3];
-        creditLabels[0] = new Label("Desarrollado por: Mi Nombre", skin);
-        creditLabels[1] = new Label("Assets: Mi Nombre", skin);
-        creditLabels[2] = new Label("Musica: Mi Nombre", skin);
+        creditLabels = new Label[8];
+        creditLabels[0] = new Label(MineKart.myBundle.get("development") + ": Telmo Iglesias", skin);
+        creditLabels[1] = new Label("Pixel Fantasy Caves: SZADI ART", skin);
+        creditLabels[2] = new Label("A Bunch Of Rocks: verzatiledev", skin);
+        creditLabels[3] = new Label("UI Skins: czyzby, yuripourre, crykn", skin);
+        creditLabels[4] = new Label(MineKart.myBundle.get("musicAndSounds") + ": Telmo Iglesias", skin);
+        creditLabels[5] = new Label("Box2d: Eric Catto", skin);
+        creditLabels[6] = new Label("LibGDX: BadLogicGames", skin);
+        creditLabels[7] = new Label("Extras: Telmo Iglesias", skin);
 
-        creditsBackButton = new TextButton("ATRAS", skin);
+        creditsBackButton = new TextButton(MineKart.myBundle.get("back"), skin);
         creditsBackButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -388,7 +420,7 @@ public class MainMenu extends ScreenAdapter {
             }
         });
 
-        creditsTable.add(creditsTitle).padBottom(20f).row();
+        creditsTable.add(creditsTitle).padBottom(10f).row();
         for (Label label : creditLabels) {
             creditsTable.add(label).padBottom(10f).row();
         }

@@ -1,6 +1,5 @@
 package com.minekart.sprites;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -11,16 +10,10 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.minekart.MineKart;
-import com.minekart.screens.PlayScreen;
-
-import java.awt.Rectangle;
-import java.awt.geom.RectangularShape;
-import java.util.ArrayList;
+import com.minekart.screens.niveles.Nivel;
 
 public class Eyeball extends Sprite {
     TextureAtlas eye_atlas;
@@ -32,14 +25,15 @@ public class Eyeball extends Sprite {
     public static final int boundX = 100;
     public static final int boundY = 100;
 
-    public Eyeball(World world, PlayScreen screen) {
-        eye_atlas = screen.getAtlas();
+    //OLD CODE
+    public Eyeball(World world, Nivel screen) {
+//        eye_atlas = screen.getAtlas();
         frames = new Array<>();
         for (int i = 0; i < 17; i++) {
             frames.add(eye_atlas.findRegion(String.format("frame_%02d_delay-0.1s", i)));
         }
         eye_animation = new Animation<>(.1f, frames, Animation.PlayMode.LOOP);
-        the_hand = new Sprite(screen.getHand_texture());
+//        the_hand = new Sprite(screen.getHand_texture());
         stateTime = 0f;
         this.setRegion(eye_animation.getKeyFrame(stateTime, true));
         this.setBounds(0, 0, boundX / MineKart.PPM, boundY / MineKart.PPM);

@@ -7,7 +7,7 @@ import com.minekart.MineKart;
 import com.minekart.screens.niveles.Nivel;
 import com.minekart.sprites.Kart;
 
-//TODO implementar InteractiveTileObject para poder darles posicion en el tiled
+//OLD CODE
 public class Coin extends InteractiveObject {
     public Coin(World world, Vector2 pos, Nivel screen, Texture texture){
         super(world,pos,screen, texture);

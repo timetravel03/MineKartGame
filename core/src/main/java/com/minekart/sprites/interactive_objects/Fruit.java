@@ -6,7 +6,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.minekart.MineKart;
 import com.minekart.screens.niveles.Nivel;
 import com.minekart.sprites.Kart;
-
+//OLD CODE
 public class Fruit extends InteractiveObject {
     public Fruit(World world, Vector2 pos, Nivel screen, Texture texture) {
         super(world, pos, screen, texture);

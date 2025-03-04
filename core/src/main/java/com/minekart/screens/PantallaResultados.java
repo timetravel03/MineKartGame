@@ -14,10 +14,6 @@ import com.minekart.MineKart;
 import com.minekart.screens.niveles.Nivel;
 
 public class PantallaResultados implements Screen {
-    private int monedas;
-    private int frutas;
-    private int vidas;
-    private int puntuacion_nivel;
     private Viewport viewport;
     private Stage stage;
     private Table table;
@@ -30,9 +26,8 @@ public class PantallaResultados implements Screen {
     private Skin skin;
 
     public PantallaResultados(MineKart game, int puntuacion_nivel, int frutas, int monedas, int vidas, Nivel siguienteNivel) {
-        this.vidas = vidas;
         this.game = game;
-        this.puntuacion_nivel = puntuacion_nivel + (vidas * 50);
+        puntuacion_nivel += (vidas * 50);
         this.siguienteNivel = siguienteNivel;
         skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
 
@@ -44,10 +39,10 @@ public class PantallaResultados implements Screen {
         table.center();
         table.setFillParent(true);
 
-        vidasLabel = new Label(String.format("Vidas: %d", vidas), skin);
-        frutasLabel = new Label(String.format("Cajetillas: %d", frutas), skin);
-        monedasLabel = new Label(String.format("Monedas: %d", monedas), skin);
-        puntosLabel = new Label(String.format("Puntuación: %d", this.puntuacion_nivel), skin);
+        vidasLabel = new Label(String.format("%s: %d", MineKart.myBundle.get("lives"), vidas), skin);
+        frutasLabel = new Label(String.format("%s: %d", MineKart.myBundle.get("packs"), frutas), skin);
+        monedasLabel = new Label(String.format("%s: %d", MineKart.myBundle.get("coins"), monedas), skin);
+        puntosLabel = new Label(String.format("%s: %d", MineKart.myBundle.get("score"), puntuacion_nivel), skin);
         table.add(monedasLabel);
         table.row();
         table.add(frutasLabel);
@@ -58,7 +53,7 @@ public class PantallaResultados implements Screen {
 
         stage.addActor(table);
 
-        game.puntacionActual += this.puntuacion_nivel;
+        game.puntacionActual += puntuacion_nivel;
     }
 
     @Override
