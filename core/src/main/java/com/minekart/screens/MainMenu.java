@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.minekart.MineKart;
@@ -40,6 +39,7 @@ public class MainMenu extends ScreenAdapter {
     private Table levelSelectTable;
     private Viewport viewport;
     private Label titulo;
+    private Table helpTable;
 
     // aspecto
     private Skin skin;
@@ -58,6 +58,7 @@ public class MainMenu extends ScreenAdapter {
     private TextButton creditosButton;
     private TextButton atrasButton;
     private TextButton levelSelectButton;
+    private TextButton helpButton;
 
     // records
     private Label[] recordLabels;
@@ -86,17 +87,10 @@ public class MainMenu extends ScreenAdapter {
         skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
         Gdx.input.setInputProcessor(stage);
 
-        //idioma base (español)
-        if (MineKart.locale != null) {
-            MineKart.myBundle = I18NBundle.createBundle(MineKart.baseFileHandle, MineKart.locale);
-        } else {
-            MineKart.myBundle = I18NBundle.createBundle(MineKart.baseFileHandle);
-        }
-
         // musica de fondo
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/drone.ogg"));
         menuMusic.setLooping(true);
-        menuMusic.setVolume(0.5f);
+        menuMusic.setVolume(MineKart.volume);
         menuMusic.play();
 
         // creacion de las tablas
@@ -105,6 +99,7 @@ public class MainMenu extends ScreenAdapter {
         recordsTable = new Table();
         creditsTable = new Table();
         levelSelectTable = new Table();
+        helpTable = new Table();
 
         // tablas rellenan la pantalla
         mainTable.setFillParent(true);
@@ -112,12 +107,14 @@ public class MainMenu extends ScreenAdapter {
         recordsTable.setFillParent(true);
         creditsTable.setFillParent(true);
         levelSelectTable.setFillParent(true);
+        helpTable.setFillParent(true);
 
         // ocultar todas las tablas excepto la principal
         optionsTable.setVisible(false);
         recordsTable.setVisible(false);
         creditsTable.setVisible(false);
         levelSelectTable.setVisible(false);
+        helpTable.setVisible(false);
 
         // creacion de los elementos de los menus
         setupMainMenu();
@@ -125,6 +122,7 @@ public class MainMenu extends ScreenAdapter {
         setupRecordsMenu();
         setupLevelSelectMenu();
         setupCreditsMenu();
+        setupHelpMenu();
 
         // añadir las tablas a la pantalla
         stage.addActor(mainTable);
@@ -132,6 +130,7 @@ public class MainMenu extends ScreenAdapter {
         stage.addActor(recordsTable);
         stage.addActor(creditsTable);
         stage.addActor(levelSelectTable);
+        stage.addActor(helpTable);
     }
 
     // menu principal
@@ -191,14 +190,17 @@ public class MainMenu extends ScreenAdapter {
     private void setupOptionsMenu() {
         Label optionsTitle = new Label(MineKart.myBundle.get("options"), skin);
 
-        volumeLabel = new Label(MineKart.myBundle.get("volume") + ": 50%", skin);
+        // TODO string format
+        volumeLabel = new Label(String.format("%s: %.0f%%", MineKart.myBundle.get("volume"), MineKart.volume * 100), skin);
         sliderVolumen = new Slider(0, 100, 1, false, skin);
-        sliderVolumen.setValue(50);
+        sliderVolumen.setValue(MineKart.volume * 100);
         sliderVolumen.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 volumeLabel.setText(MineKart.myBundle.get("volume") + ": " + (int) sliderVolumen.getValue() + "%");
-                menuMusic.setVolume(sliderVolumen.getValue() / 100f);
+                MineKart.volume = sliderVolumen.getValue() / 100f;
+                menuMusic.setVolume(MineKart.volume);
+                MineKart.fxVolume = MineKart.volume * 0.2f;
             }
         });
 
@@ -228,11 +230,12 @@ public class MainMenu extends ScreenAdapter {
                 String currentText = idiomaButton.getText().toString();
                 if (currentText.contains("ES")) {
                     idiomaButton.setText(MineKart.myBundle.get("language") + ": EN");
-                    MineKart.locale = new Locale("en", "GB");
+                    MineKart.locale = new Locale("en");
                 } else {
                     idiomaButton.setText(MineKart.myBundle.get("language") + ": ES");
                     MineKart.locale = null;
                 }
+                MineKart.inicializarBundle();
                 game.setScreen(new MainMenu(game));
                 dispose();
             }
@@ -256,14 +259,24 @@ public class MainMenu extends ScreenAdapter {
             }
         });
 
+        helpButton = new TextButton(MineKart.myBundle.get("help"), skin);
+        helpButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                optionsTable.setVisible(false);
+                helpTable.setVisible(true);
+            }
+        });
+
         optionsTable.add(optionsTitle).padBottom(20f).row();
         optionsTable.add(volumeLabel).padBottom(5f).row();
         optionsTable.add(sliderVolumen).width(200).padBottom(10f).row();
-        optionsTable.add(vibracionButton).width(200).height(50).padBottom(10f).row();
-        optionsTable.add(levelSelectButton).width(200).height(50).padBottom(10f).row();
-        optionsTable.add(idiomaButton).width(200).height(50).padBottom(10f).row();
-        optionsTable.add(creditosButton).width(200).height(50).padBottom(10f).row();
-        optionsTable.add(atrasButton).width(200).height(50).row();
+        optionsTable.add(vibracionButton).width(200).height(40).padBottom(10f).row();
+        optionsTable.add(levelSelectButton).width(200).height(40).padBottom(10f).row();
+        optionsTable.add(idiomaButton).width(200).height(40).padBottom(10f).row();
+        optionsTable.add(helpButton).width(200).height(40).padBottom(10f).row();
+        optionsTable.add(creditosButton).width(200).height(40).padBottom(10f).row();
+        optionsTable.add(atrasButton).width(200).height(40).row();
         optionsTable.center();
     }
 
@@ -347,10 +360,10 @@ public class MainMenu extends ScreenAdapter {
     private void setupLevelSelectMenu() {
         Label levelSelectTitle = new Label(MineKart.myBundle.get("selectCourse"), skin);
 
-        levelButtons = new TextButton[4];
-        String[] levelNames = {MineKart.myBundle.get("course") + " 1", MineKart.myBundle.get("course") + " 2", MineKart.myBundle.get("course") + " 3", MineKart.myBundle.get("course") + " 4"};
+        levelButtons = new TextButton[3];
+        String[] levelNames = {MineKart.myBundle.get("course") + " 1", MineKart.myBundle.get("course") + " 2", MineKart.myBundle.get("course") + " 3"};
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             final int levelIndex = i;
             levelButtons[i] = new TextButton(levelNames[i], skin);
             levelButtons[i].addListener(new ClickListener() {
@@ -369,10 +382,6 @@ public class MainMenu extends ScreenAdapter {
                             break;
                         case 2:
                             game.setScreen(new TercerNivel(game));
-                            break;
-                        case 3:
-                            //placeholder para nivel 4
-                            game.setScreen(new PrimerNivel(game));
                             break;
                     }
                     dispose();
@@ -406,7 +415,7 @@ public class MainMenu extends ScreenAdapter {
         creditLabels[1] = new Label("Pixel Fantasy Caves: SZADI ART", skin);
         creditLabels[2] = new Label("A Bunch Of Rocks: verzatiledev", skin);
         creditLabels[3] = new Label("UI Skins: czyzby, yuripourre, crykn", skin);
-        creditLabels[4] = new Label(MineKart.myBundle.get("musicAndSounds") + ": Telmo Iglesias", skin);
+        creditLabels[4] = new Label(MineKart.myBundle.get("musicAndSounds") + ": Telmo/Amanda", skin);
         creditLabels[5] = new Label("Box2d: Eric Catto", skin);
         creditLabels[6] = new Label("LibGDX: BadLogicGames", skin);
         creditLabels[7] = new Label("Extras: Telmo Iglesias", skin);
@@ -426,6 +435,28 @@ public class MainMenu extends ScreenAdapter {
         }
         creditsTable.add(creditsBackButton).width(200).height(50).padTop(20f).row();
         creditsTable.center();
+    }
+
+    private void setupHelpMenu() {
+        Label helpTitle = new Label(MineKart.myBundle.get("help"), skin);
+
+        // Create multi-line text with game instructions
+        Label helpText = new Label(MineKart.myBundle.get("helpText"), skin);
+        helpText.setWrap(true);
+
+        TextButton helpBackButton = new TextButton(MineKart.myBundle.get("back"), skin);
+        helpBackButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                helpTable.setVisible(false);
+                optionsTable.setVisible(true);
+            }
+        });
+
+        helpTable.add(helpTitle).padBottom(20f).row();
+        helpTable.add(helpText).width(400).padBottom(20f).row();
+        helpTable.add(helpBackButton).width(200).height(50).row();
+        helpTable.center();
     }
 
     @Override

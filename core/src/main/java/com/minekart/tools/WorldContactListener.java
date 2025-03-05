@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.minekart.MineKart;
 import com.minekart.sprites.interactive_objects.InteractiveObject;
 import com.minekart.sprites.tile_objects.InteractiveTileObject;
 import com.minekart.sprites.Kart;
@@ -46,6 +47,10 @@ public class WorldContactListener implements ContactListener {
             k.enSuelo = true;
             k.enRampa = false;
             Gdx.app.log("BEGIN CONTACT", "Suelo");
+        }
+
+        if ((fixA.getUserData() == "rebote" || fixB.getUserData() == "rebote")) {
+            MineKart.sounds.get("rebote").play(MineKart.fxVolume);
         }
 
         //checkpoints

@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.minekart.MineKart;
+import com.minekart.screens.PantallaMuerte;
 import com.minekart.sprites.interactive_objects.FallingRock;
 import com.minekart.tools.CheckPoint;
 import com.minekart.tools.FuncionesNivel;
@@ -16,7 +17,6 @@ import com.minekart.tools.FuncionesNivel;
 public class PrimerNivel extends Nivel {
     private Array<FallingRock> rocas;
     private float intevaloRocas = MathUtils.random(3f, 7f);
-    Music music = Gdx.audio.newMusic(Gdx.files.internal("song1.wav"));
 
     @Override
     protected void encontrarPrimerCheckpoint() {
@@ -28,9 +28,10 @@ public class PrimerNivel extends Nivel {
         rocas = new Array<FallingRock>();
         id = 1;
         siguienteNivel = new SegundoNivel(game);
-//        music.play();
-//        music.setLooping(true);
-//        music.setVolume(0.1f);
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/lv1.ogg"));
+        music.play();
+        music.setLooping(true);
+        music.setVolume(MineKart.volume);
     }
 
     @Override
@@ -54,13 +55,11 @@ public class PrimerNivel extends Nivel {
         }
 
         // debug
-        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-            kartPlayer.b2Body.setTransform(70, 3, 0);
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+//            kartPlayer.b2Body.setTransform(70, 3, 0);
+//        }
 
-        if (completado) {
-            music.stop();
-        }
+
     }
 
     @Override

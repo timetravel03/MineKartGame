@@ -42,6 +42,10 @@ public class CheckPoint extends InteractiveTileObject {
 
     @Override
     public void onCollision(Kart player) {
+        if (!cruzado){
+            MineKart.sounds.get("checkpoint").play(MineKart.volume);
+        }
+        cruzado = true;
         player.ultimoCheckPoint = this;
         getCell().setTile(null);
     }

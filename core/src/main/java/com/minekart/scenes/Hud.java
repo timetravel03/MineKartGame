@@ -62,6 +62,7 @@ public class Hud implements Disposable {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Hud", "Pause");
+                MineKart.sounds.get("pause").play(MineKart.volume);
                 pause = !pause;
                 pauseLabel.setVisible(pause);
             }

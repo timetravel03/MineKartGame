@@ -3,6 +3,7 @@ package com.minekart.sprites.tile_objects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.World;
+import com.minekart.MineKart;
 import com.minekart.screens.niveles.Nivel;
 import com.minekart.sprites.Kart;
 
@@ -14,6 +15,7 @@ public class Meta extends InteractiveTileObject {
     }
     @Override
     public void onCollision(Kart player) {
+        MineKart.sounds.get("meta").play(MineKart.volume);
         screen.completado = true;
     }
 }

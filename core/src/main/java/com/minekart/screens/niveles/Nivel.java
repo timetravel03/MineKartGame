@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -79,6 +80,12 @@ public abstract class Nivel implements Screen {
     //referencia al siguiente nivel
     protected Nivel siguienteNivel;
 
+    // indica si es el nivel final
+    protected boolean finalLevel;
+
+    // musica del nivel
+    Music music;
+
     //orden: cargar assets -> cargar colisiones -> renderizar extra
     public Nivel(MineKart game) {
         // main
@@ -89,6 +96,7 @@ public abstract class Nivel implements Screen {
         listaCuerposEliminar = new Array<Body>();
         deltaTimer = 0;
         respawnPoints = new Array<>();
+        finalLevel = false;
 
         // camara
         gameCam = new OrthographicCamera();
@@ -155,8 +163,17 @@ public abstract class Nivel implements Screen {
 
         // reaaparecer en ultimo checkpoint
         if (kartPlayer.reaparecer) {
+            MineKart.sounds.get("hit").play(MineKart.fxVolume);
             kartPlayer.reaparecer = false;
             kartPlayer.b2Body.setTransform(kartPlayer.ultimoCheckPoint.puntoMasBajo(), 0);
+        }
+
+        if (completado) {
+            music.stop();
+        }
+
+        if (kartPlayer.getCantidad_vidas() < 0) {
+            music.stop();
         }
     }
 
@@ -229,17 +246,21 @@ public abstract class Nivel implements Screen {
         // comprueba si se ha completado el nivel, no puede ir en update porque se ejecuta antes de que se renderice el mundo y causaria problemas
         if (completado) {
             hud.pause = true;
-            fadeOutTo(new PantallaResultados(game,
-                kartPlayer.getPuntuacion(),
-                kartPlayer.getFrutas(),
-                kartPlayer.getCantidad_monedas(),
-                kartPlayer.getCantidad_vidas(), siguienteNivel), delta);
+            if (finalLevel) {
+                fadeOutTo(new PantallaMuerte(game, kartPlayer.getPuntuacion(), finalLevel, completado), delta);
+            } else {
+                fadeOutTo(new PantallaResultados(game,
+                    kartPlayer.getPuntuacion(),
+                    kartPlayer.getFrutas(),
+                    kartPlayer.getCantidad_monedas(),
+                    kartPlayer.getCantidad_vidas(), siguienteNivel), delta);
+            }
         }
 
         //cuando te quedas sin vidas te devuelve a la pantalla de titulo
         if (kartPlayer.getCantidad_vidas() < 0) {
             hud.pause = true;
-            fadeOutTo(new PantallaMuerte(game, kartPlayer.getPuntuacion()), delta);
+            fadeOutTo(new PantallaMuerte(game, kartPlayer.getPuntuacion(), finalLevel, completado), delta);
         }
     }
 
@@ -306,6 +327,8 @@ public abstract class Nivel implements Screen {
 
     @Override
     public void dispose() {
+        music.stop();
+        music.dispose();
         map.dispose();
         mapRenderer.dispose();
         world.dispose();

@@ -19,6 +19,7 @@ public class FruitTile extends InteractiveTileObject {
 
     @Override
     public void onCollision(Kart player) {
+        MineKart.sounds.get("pack").play(MineKart.fxVolume);
         if (MineKart.vibracion) Gdx.input.vibrate(50);
         player.setPuntuacion(player.getPuntuacion() + MineKart.FRUIT_VALUE);
         player.setFrutas(player.getFrutas() + 1);

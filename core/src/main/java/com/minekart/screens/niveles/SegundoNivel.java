@@ -14,7 +14,17 @@ public class SegundoNivel extends Nivel{
         id = 2;
         // FIXME no se puede instaciar un nivel anterior, crashea
         siguienteNivel = new TercerNivel(game);
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/lv2.wav"));
     }
+
+    @Override
+    public void show() {
+        super.show();
+        music.play();
+        music.setLooping(true);
+        music.setVolume(MineKart.volume);
+    }
+
     @Override
     void cargarAssets() {
         map = mapLoader.load("mapa_2.tmx");

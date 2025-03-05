@@ -15,6 +15,7 @@ public class CoinTile extends InteractiveTileObject {
     }
 
     public void onCollision(Kart player) {
+        MineKart.sounds.get("coin").play(MineKart.fxVolume);
         if (MineKart.vibracion) Gdx.input.vibrate(50);
         player.setPuntuacion(player.getPuntuacion() + MineKart.COIN_VALUE);
         player.setCantidad_monedas(player.getCantidad_monedas() + 1);

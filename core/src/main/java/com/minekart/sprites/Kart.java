@@ -173,6 +173,7 @@ public class Kart extends Sprite {
 
         // logica del salto
         if (justPressed && enSuelo && !isJumping) {
+            MineKart.sounds.get("jump").play(MineKart.fxVolume);
             isJumping = true;
             jumpTimer = 0;
             // impulso inicial

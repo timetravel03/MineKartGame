@@ -116,7 +116,7 @@ public class B2WorldCreator {
             fDef.shape = shape;
             fDef.friction = 0f;
             fDef.restitution = .9f;
-            body.createFixture(fDef);
+            body.createFixture(fDef).setUserData("rebote");
         }
     }
 
