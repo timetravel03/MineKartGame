@@ -285,14 +285,11 @@ public class MainMenu extends ScreenAdapter {
         Preferences prefs = Gdx.app.getPreferences("minekart-preferences");
         String highScores = prefs.getString("highscores", "");
 
-        // Parse high scores and display in recordLabels
         if (!highScores.isEmpty()) {
             String[] entries = highScores.split(",");
 
-            // Create a map to store name-score pairs
             Map<String, Integer> scoresMap = new HashMap<>();
 
-            // Parse entries and keep highest score for each name
             for (String entry : entries) {
                 if (!entry.isEmpty()) {
                     String[] parts = entry.split(":");
@@ -311,18 +308,15 @@ public class MainMenu extends ScreenAdapter {
                 }
             }
 
-            // Sort entries by score (highest first)
             List<Map.Entry<String, Integer>> sortedEntries = new ArrayList<>(scoresMap.entrySet());
             sortedEntries.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
 
-            // Display top scores
             int count = Math.min(sortedEntries.size(), recordLabels.length);
             for (int i = 0; i < count; i++) {
                 Map.Entry<String, Integer> entry = sortedEntries.get(i);
                 recordLabels[i].setText((i + 1) + ". " + entry.getKey() + " - " + entry.getValue() + " pts");
             }
 
-            // Clear remaining labels
             for (int i = count; i < recordLabels.length; i++) {
                 recordLabels[i].setText((i + 1) + ". ---");
             }

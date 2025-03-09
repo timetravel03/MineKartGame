@@ -22,7 +22,7 @@ public class SegundoNivel extends Nivel{
         super.show();
         music.play();
         music.setLooping(true);
-        music.setVolume(MineKart.volume);
+        music.setVolume(MineKart.volume*.7f);
     }
 
     @Override
